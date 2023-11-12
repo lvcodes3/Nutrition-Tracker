@@ -6,9 +6,25 @@ import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
 
 const AuthHomeContainer = styled.div`
+    border: 1px solid red;
     width: 100%;
-    height: auto;
+    min-height: 100%;
     background-color: #D9D9D9;
+    display: flex;
+    flex-direction: column;
+
+    #user-header-div {
+        border: 1px solid black;
+        
+        h1, h2 {
+            margin: 10px 0 10px 0;
+            text-align: center;
+        }
+    }
+
+    #static-meal-div {
+        
+    }
 `;
 
 const UnauthHomeContainer = styled.div`
@@ -25,8 +41,12 @@ const Home = () => {
         {
             user.authenticated ? (
                 <AuthHomeContainer>
-                    <div>
-                        <h1>Welcome back, {user.firstName}!</h1>
+                    <div id='user-header-div'>
+                        <h1>Nutrition Tracker</h1>
+                        <h2>Welcome back, {user.firstName}!</h2>
+                    </div>
+                    <div id='static-meal-div'>
+                        <p>test</p>
                     </div>
                 </AuthHomeContainer>
             ) : (

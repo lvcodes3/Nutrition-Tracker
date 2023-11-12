@@ -16,7 +16,7 @@ const Container = styled.div`
 const RegisterForm = styled.form`
     width: 500px;
     height: 425px;
-    margin: 50px 0 0 0;
+    margin: 50px 0 50px 0;
     border: 2px solid black;
     border-radius: 10px;
     background-color: #88BBD6;
