@@ -5,6 +5,8 @@ import Modal from 'react-modal';
 import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
+//
+import { FaCircleXmark, FaStarOfLife } from 'react-icons/fa6';
 
 // set the app root element //
 Modal.setAppElement('#root');
@@ -15,6 +17,7 @@ const Container = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+    background-color: #D9D9D9;
 
     #meals-header-div {
         border: 1px solid blue;
@@ -92,6 +95,26 @@ const Meals = () => {
         protein: '',
         timestamp: ''
     });
+    interface FormDataErrorTypes {
+        nameError: string;
+        caloriesError: string;
+        totalFatError: string;
+        cholesterolError: string;
+        sodiumError: string;
+        totalCarbohydrateError: string;
+        proteinError: string;
+        timestampError: string;
+    };
+    const [formDataErrors, setFormDataErrors] = useState<FormDataErrorTypes>({
+        nameError: '',
+        caloriesError: '',
+        totalFatError: '',
+        cholesterolError: '',
+        sodiumError: '',
+        totalCarbohydrateError: '',
+        proteinError: '',
+        timestampError: ''
+    });
 
     useEffect(() => {
         const getDateTime = () => {
@@ -114,8 +137,75 @@ const Meals = () => {
         openModal();
     }
 
-    const submitForm = () => {
+    const isIntegerString = (str: string) => {
+        return /^\d+$/.test(str);
+    }
 
+    const validateFormData = () => {
+        // trim inputs //
+        setFormData({
+            name: formData.name.trim(),
+            calories: formData.calories.trim(),
+            totalFat: formData.totalFat.trim(),
+            cholesterol: formData.cholesterol.trim(),
+            sodium: formData.sodium.trim(),
+            totalCarbohydrate: formData.totalCarbohydrate.trim(),
+            protein: formData.protein.trim(),
+            timestamp: formData.timestamp.trim()
+        });
+
+        let errorCount: number = 0;
+        let updatedFormDataErrors = { ...formDataErrors };
+
+        if (formData.name.length === 0) {
+            updatedFormDataErrors.nameError = 'Name is required.';
+            errorCount++;
+        }
+        else if (formData.name.length > 50) {
+            updatedFormDataErrors.nameError = 'Name can only be up to 50 characters in length.';
+            errorCount++;
+        }
+
+        if (formData.calories.length > 0) {
+            if (!isIntegerString(formData.calories)) {
+                updatedFormDataErrors.caloriesError = 'Calories must only be integers.';
+                errorCount++;
+            }
+            else if (parseInt(formData.calories) < 0) {
+                updatedFormDataErrors.caloriesError = 'Calories can not be negative.';
+                errorCount++;
+            }
+        }
+
+        if (formData.timestamp.length === 0) {
+            updatedFormDataErrors.timestampError = 'Date & Time Consumed is required.';
+            errorCount++;
+        }
+
+        setFormDataErrors(updatedFormDataErrors);
+
+        return errorCount === 0;
+    }
+
+    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+        // prevent screen refresh //
+        e.preventDefault();
+
+        if (validateFormData()) {
+            // determine api endpoint //
+            if (selectedMeal === 'Breakfast') {
+
+            }
+            else if (selectedMeal === 'Lunch') {
+
+            }
+            else if (selectedMeal === 'Dinner') {
+
+            }
+            else if (selectedMeal === 'Snack') {
+
+            }
+        }
     }
 
     return (
@@ -174,13 +264,15 @@ const Meals = () => {
                 contentLabel='Modal'
             >
                 <div id='content-modal-div'>
+                    <StyledFaCircleXmark onClick={closeModal}/>
                     <h1>{selectedMeal}</h1>
 
                     <form onSubmit={submitForm}>
                         <div>
-                            <label>Name:</label>
+                            <p>{formDataErrors.nameError}</p>
+                            <label>Name: <StyledFaStarOfLife /></label>
                             <input
-                                type="text"
+                                type='text'
                                 value={formData.name}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -192,9 +284,10 @@ const Meals = () => {
                         </div>
 
                         <div>
+                            <p>{formDataErrors.caloriesError}</p>
                             <label>Calories:</label>
                             <input
-                                type="number"
+                                type='number'
                                 value={formData.calories}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -208,7 +301,7 @@ const Meals = () => {
                         <div>
                             <label>Total Fat:</label>
                             <input
-                                type="text"
+                                type='number'
                                 value={formData.totalFat}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -222,7 +315,7 @@ const Meals = () => {
                         <div>
                             <label>Cholesterol:</label>
                             <input
-                                type="text"
+                                type='number'
                                 value={formData.cholesterol}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -236,7 +329,7 @@ const Meals = () => {
                         <div>
                             <label>Sodium:</label>
                             <input
-                                type="text"
+                                type='number'
                                 value={formData.sodium}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -250,7 +343,7 @@ const Meals = () => {
                         <div>
                             <label>Total Carbohydrate:</label>
                             <input
-                                type="text"
+                                type='number'
                                 value={formData.totalCarbohydrate}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -264,7 +357,7 @@ const Meals = () => {
                         <div>
                             <label>Protein:</label>
                             <input
-                                type="text"
+                                type='number'
                                 value={formData.protein}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -276,9 +369,10 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label>Date Time Consumed:</label>
+                            <p>{formDataErrors.timestampError}</p>
+                            <label>Date & Time Consumed: <StyledFaStarOfLife /></label>
                             <input
-                                type="datetime-local"
+                                type='datetime-local'
                                 value={formData.timestamp}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
@@ -289,12 +383,8 @@ const Meals = () => {
                             />
                         </div>
 
-                        <button type="submit">Enter</button>
+                        <button type='submit'>Enter</button>
                     </form>
-
-                    <div>
-                        <button onClick={closeModal}>Exit</button>
-                    </div>
                 </div>
             </CustomModal>
         </Container>
@@ -310,8 +400,8 @@ const CustomModal = styled(Modal)`
     }
 
     #content-modal-div {
-        width: 40%;
-        height: 500px;
+        width: 450px;
+        height: 550px;
         padding: 20px;
         position: absolute;
         top: 50%;
@@ -334,12 +424,38 @@ const CustomModal = styled(Modal)`
             div {
                 display: flex;
                 flex-direction: column;
+                p {
+                    margin: 0;
+                    color: red;
+                }
                 label {
                     text-align: left;
+                    font-weight: bold;
+                }
+                input {
+                    border: 1px solid black;
+                    border-radius: 10px;
                 }
             }
             
-
+            button {
+                margin: 0 auto;
+                width: 225px;
+                font-weight: bold;
+                border: 1px solid black;
+                border-radius: 10px;
+                background-color: white;
+            }
         }
     }
+`;
+const StyledFaCircleXmark = styled(FaCircleXmark)`
+    color: red;
+    font-size: 20px;
+    float: right;
+    cursor: pointer;
+`;
+const StyledFaStarOfLife = styled(FaStarOfLife)`
+    color: red;
+    font-size: 12px;
 `;
