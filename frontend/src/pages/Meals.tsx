@@ -27,11 +27,12 @@ const Container = styled.div`
     }
 
     .meals-div {
+        padding: 10px;
         border: 1px solid green;
         text-align: center;
 
         h1 {
-            margin: 5px 0 5px 0;
+            margin: 0 0 5px 0;
             text-align: center;
         }
         div {
@@ -46,7 +47,8 @@ const Container = styled.div`
 const Meals = () => {
     const { user, setUser } = useContext(AuthContext);
 
-    const [date, setDate] = useState<null | string>(null);
+    const [displayDate, setDisplayDate] = useState<null | string>(null);
+    const [queryDate, setQueryDate] = useState<null | string>(null);
     const [selectedMeal, setSelectedMeal] = useState<null | string>(null);
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
@@ -112,13 +114,40 @@ const Meals = () => {
     });
 
     useEffect(() => {
+        const getDailyMeals = async (date: string) => {
+            try {
+                const response = await fetch(
+                  'http://localhost:5000/api/v1/nutrition/getDailyMeals',
+                  {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ date: date })
+                  }
+                );
+                console.log(response);
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log(data);
+                }
+              } catch (err) {
+                console.log(`Fetch error: ${err}`);
+              }
+        }
+
         const getCurrentDate = () => {
             const currentDate = new Date();
-            const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month.
+            const currentMonth = currentDate.getMonth() + 1;
             const currentDay = currentDate.getDate();
             const currentYear = currentDate.getFullYear();
-            setDate(`${currentMonth}/${currentDay}/${currentYear}`);
+            setDisplayDate(`${currentMonth}/${currentDay}/${currentYear}`);
+            setQueryDate(`${currentYear}-${currentMonth}-${currentDay}`);
+
+            getDailyMeals(`${currentYear}-${currentMonth}-${currentDay}`);
         }
+
         getCurrentDate();
     }, []);
 
@@ -235,15 +264,8 @@ const Meals = () => {
             errorCount++;
         }
         else {
-            const dateObj = new Date(formData.consumedAt);
-            const year = dateObj.getFullYear();
-            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            const day = dateObj.getDate().toString().padStart(2, '0');
-            const datePart = `${month}/${day}/${year}`;
-
-            console.log(datePart);
-            console.log(date);
-            if (datePart !== date) {
+            const [datePart, timePart] = formData.consumedAt.split('T');
+            if (datePart !== queryDate) {
                 updatedFormDataErrors.consumedAtError = 'Consumed At date must be equal to the current date.';
                 errorCount++;
             }
@@ -252,9 +274,7 @@ const Meals = () => {
         if (errorCount === 0) {
             // convert html timestamp to pgsql timestamp //
             const [datePart, timePart] = formData.consumedAt.split('T');
-
             const postgresTimestamp = `${datePart}T${timePart}`;
-
             setFormData((prevFormData) => ({
                 ...prevFormData,
                 consumedAt: postgresTimestamp
@@ -316,7 +336,7 @@ const Meals = () => {
     return (
         <Container>
             <div id='date-div'>
-                <h1>{date}</h1>
+                <h1>{displayDate}</h1>
             </div>
             <div className='meals-div'>
                 <h1>Breakfasts</h1>

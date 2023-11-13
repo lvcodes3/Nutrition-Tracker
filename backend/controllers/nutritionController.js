@@ -96,7 +96,8 @@ const addLunch = (async (req, res) => {
 
         const newLunch = result.rows[0];
         return res.status(201).json(newLunch);
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(`Error adding lunch: ${err}`);
         return res.status(500).json({ err: 'Error adding lunch.' });
     }
@@ -146,7 +147,8 @@ const addDinner = (async (req, res) => {
 
         const newDinner = result.rows[0];
         return res.status(201).json(newDinner);
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(`Error adding dinner: ${err}`);
         return res.status(500).json({ err: 'Error adding dinner.' });
     }
@@ -196,7 +198,8 @@ const addSnack = (async (req, res) => {
 
         const newSnack = result.rows[0];
         return res.status(201).json(newSnack);
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(`Error adding snack: ${err}`);
         return res.status(500).json({ err: 'Error adding snack.' });
     }
@@ -204,8 +207,25 @@ const addSnack = (async (req, res) => {
 
 const getDailyMeals = (async (req, res) => {
     try {
-        
-    } catch (err) {
+        let { date } = req.body;
+
+        if (isEmpty(date)) {
+            return res.status(400).json({ err: 'Date is empty.' });
+        }
+
+        let result = await db.query(
+            `SELECT * FROM breakfasts
+             WHERE user_id=$1 AND DATE(consumed_at)=$2;`,
+            [req.user.id, date]
+        );
+        if (result.rowCount === 0) {
+            return res.status(400).json({ err: 'Error getting daily meals.' });
+        }
+
+        const dailyMeals = result.rows;
+        return res.status(200).json(dailyMeals);
+    } 
+    catch (err) {
         console.log(`Error getting daily meals: ${err}`);
         return res.status(500).json({ err: 'Error getting daily meals.' });
     }
