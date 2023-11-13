@@ -28,7 +28,7 @@ CREATE TABLE breakfasts (
     sodium INTEGER,
     total_carbohydrate INTEGER,
     protein INTEGER,
-    timestamp TIMESTAMP NOT NULL,
+    consumed_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -44,7 +44,7 @@ CREATE TABLE lunches (
     sodium INTEGER,
     total_carbohydrate INTEGER,
     protein INTEGER,
-    timestamp TIMESTAMP NOT NULL,
+    consumed_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -60,7 +60,7 @@ CREATE TABLE dinners (
     sodium INTEGER,
     total_carbohydrate INTEGER,
     protein INTEGER,
-    timestamp TIMESTAMP NOT NULL,
+    consumed_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -76,7 +76,7 @@ CREATE TABLE snacks (
     sodium INTEGER,
     total_carbohydrate INTEGER,
     protein INTEGER,
-    timestamp TIMESTAMP NOT NULL,
+    consumed_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );

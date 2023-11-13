@@ -5,21 +5,20 @@ import Modal from 'react-modal';
 import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
-//
+// assets //
 import { FaCircleXmark, FaStarOfLife } from 'react-icons/fa6';
 
 // set the app root element //
 Modal.setAppElement('#root');
 
 const Container = styled.div`
-    border: 1px solid red;
     width: 100%;
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
     background-color: #D9D9D9;
 
-    #meals-header-div {
+    #date-div {
         border: 1px solid blue;
         h1 {
             margin: 10px 0 10px 0;
@@ -27,7 +26,7 @@ const Container = styled.div`
         }
     }
 
-    #breakfasts-div {
+    .meals-div {
         border: 1px solid green;
         text-align: center;
 
@@ -41,28 +40,6 @@ const Container = styled.div`
         button {
             
         }
-
-    }
-    #lunches-div {
-        border: 1px solid green;
-        h1 {
-            margin: 5px 0 5px 0;
-            text-align: center;
-        }
-    }
-    #dinners-div {
-        border: 1px solid green;
-        h1 {
-            margin: 5px 0 5px 0;
-            text-align: center;
-        }
-    }
-    #snacks-div {
-        border: 1px solid green;
-        h1 {
-            margin: 5px 0 5px 0;
-            text-align: center;
-        }
     }
 `;
 
@@ -70,10 +47,27 @@ const Meals = () => {
     const { user, setUser } = useContext(AuthContext);
 
     const [date, setDate] = useState<null | string>(null);
-    const [time, setTime] = useState<null | string>(null);
-
     const [selectedMeal, setSelectedMeal] = useState<null | string>(null);
     const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+
+    interface MealDataTypes {
+        id: number;
+        userId: number;
+        name: string;
+        calories: null | number;
+        totalFat: null | number;
+        cholesterol: null | number;
+        sodium: null | number;
+        totalCarbohydrate: null | number;
+        protein: null | number;
+        consumedAt: string;
+        createdAt: string;
+        updatedAt: null | string;
+    }
+    const [breakfasts, setBreakfasts] = useState<MealDataTypes[]>([]);
+    const [lunches, setLunches] = useState<MealDataTypes[]>([]);
+    const [dinners, setDinners] = useState<MealDataTypes[]>([]);
+    const [snacks, setSnacks] = useState<MealDataTypes[]>([]);
 
     interface FormDataTypes {
         name: string;
@@ -83,7 +77,7 @@ const Meals = () => {
         sodium: string;
         totalCarbohydrate: string;
         protein: string;
-        timestamp: string;
+        consumedAt: string;
     };
     const [formData, setFormData] = useState<FormDataTypes>({
         name: '',
@@ -93,8 +87,9 @@ const Meals = () => {
         sodium: '',
         totalCarbohydrate: '',
         protein: '',
-        timestamp: ''
+        consumedAt: ''
     });
+
     interface FormDataErrorTypes {
         nameError: string;
         caloriesError: string;
@@ -103,7 +98,7 @@ const Meals = () => {
         sodiumError: string;
         totalCarbohydrateError: string;
         proteinError: string;
-        timestampError: string;
+        consumedAtError: string;
     };
     const [formDataErrors, setFormDataErrors] = useState<FormDataErrorTypes>({
         nameError: '',
@@ -113,28 +108,47 @@ const Meals = () => {
         sodiumError: '',
         totalCarbohydrateError: '',
         proteinError: '',
-        timestampError: ''
+        consumedAtError: ''
     });
 
     useEffect(() => {
-        const getDateTime = () => {
-            const currentDate = new Date().toLocaleString();
-            const arr = currentDate.split(', ');
-            setDate(arr[0]);
-            setTime(arr[1]);
+        const getCurrentDate = () => {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1; // Month is zero-based, so add 1 to get the actual month.
+            const currentDay = currentDate.getDate();
+            const currentYear = currentDate.getFullYear();
+            setDate(`${currentMonth}/${currentDay}/${currentYear}`);
         }
-        getDateTime();
+        getCurrentDate();
     }, []);
 
-    const openModal = () => {
+    const openModal = (meal:string) => {
         setModalIsOpen(true);
+        setSelectedMeal(meal);
     }
     const closeModal = () => {
         setModalIsOpen(false);
-    }
-    const setSelectedMealAndOpenModal = (meal:string) => {
-        setSelectedMeal(meal);
-        openModal();
+        setSelectedMeal(null);
+        setFormData({
+            name: '',
+            calories: '',
+            totalFat: '',
+            cholesterol: '',
+            sodium: '',
+            totalCarbohydrate: '',
+            protein: '',
+            consumedAt: ''
+        });
+        setFormDataErrors({
+            nameError: '',
+            caloriesError: '',
+            totalFatError: '',
+            cholesterolError: '',
+            sodiumError: '',
+            totalCarbohydrateError: '',
+            proteinError: '',
+            consumedAtError: ''
+        });
     }
 
     const isIntegerString = (str: string) => {
@@ -142,6 +156,18 @@ const Meals = () => {
     }
 
     const validateFormData = () => {
+        // clear possible previous errors //
+        setFormDataErrors({
+            nameError: '',
+            caloriesError: '',
+            totalFatError: '',
+            cholesterolError: '',
+            sodiumError: '',
+            totalCarbohydrateError: '',
+            proteinError: '',
+            consumedAtError: ''
+        });
+
         // trim inputs //
         setFormData({
             name: formData.name.trim(),
@@ -151,9 +177,10 @@ const Meals = () => {
             sodium: formData.sodium.trim(),
             totalCarbohydrate: formData.totalCarbohydrate.trim(),
             protein: formData.protein.trim(),
-            timestamp: formData.timestamp.trim()
+            consumedAt: formData.consumedAt.trim()
         });
 
+        // find input errors //
         let errorCount: number = 0;
         let updatedFormDataErrors = { ...formDataErrors };
 
@@ -168,21 +195,74 @@ const Meals = () => {
 
         if (formData.calories.length > 0) {
             if (!isIntegerString(formData.calories)) {
-                updatedFormDataErrors.caloriesError = 'Calories must only be integers.';
+                updatedFormDataErrors.caloriesError = 'Calories can only be positive whole numbers.';
                 errorCount++;
             }
-            else if (parseInt(formData.calories) < 0) {
-                updatedFormDataErrors.caloriesError = 'Calories can not be negative.';
+        }
+        if (formData.totalFat.length > 0) {
+            if (!isIntegerString(formData.totalFat)) {
+                updatedFormDataErrors.totalFatError = 'Total Fat can only be positive whole numbers.';
+                errorCount++;
+            }
+        }
+        if (formData.cholesterol.length > 0) {
+            if (!isIntegerString(formData.cholesterol)) {
+                updatedFormDataErrors.cholesterolError = 'Cholesterol can only be positive whole numbers.';
+                errorCount++;
+            }
+        }
+        if (formData.sodium.length > 0) {
+            if (!isIntegerString(formData.sodium)) {
+                updatedFormDataErrors.sodiumError = 'Sodium can only be positive whole numbers.';
+                errorCount++;
+            }
+        }
+        if (formData.totalCarbohydrate.length > 0) {
+            if (!isIntegerString(formData.totalCarbohydrate)) {
+                updatedFormDataErrors.totalCarbohydrateError = 'Total Carbohydrate can only be positive whole numbers.';
+                errorCount++;
+            }
+        }
+        if (formData.protein.length > 0) {
+            if (!isIntegerString(formData.protein)) {
+                updatedFormDataErrors.proteinError = 'Protein can only be positive whole numbers.';
                 errorCount++;
             }
         }
 
-        if (formData.timestamp.length === 0) {
-            updatedFormDataErrors.timestampError = 'Date & Time Consumed is required.';
+        if (formData.consumedAt.length === 0) {
+            updatedFormDataErrors.consumedAtError = 'Consumed At is required.';
             errorCount++;
         }
+        else {
+            const dateObj = new Date(formData.consumedAt);
+            const year = dateObj.getFullYear();
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const datePart = `${month}/${day}/${year}`;
 
-        setFormDataErrors(updatedFormDataErrors);
+            console.log(datePart);
+            console.log(date);
+            if (datePart !== date) {
+                updatedFormDataErrors.consumedAtError = 'Consumed At date must be equal to the current date.';
+                errorCount++;
+            }
+        }
+
+        if (errorCount === 0) {
+            // convert html timestamp to pgsql timestamp //
+            const [datePart, timePart] = formData.consumedAt.split('T');
+
+            const postgresTimestamp = `${datePart}T${timePart}`;
+
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                consumedAt: postgresTimestamp
+            }));
+        }
+        else {
+            setFormDataErrors(updatedFormDataErrors);
+        }
 
         return errorCount === 0;
     }
@@ -193,66 +273,91 @@ const Meals = () => {
 
         if (validateFormData()) {
             // determine api endpoint //
+            let apiEndpoint = '';
             if (selectedMeal === 'Breakfast') {
-
+                apiEndpoint = 'addBreakfast';
             }
             else if (selectedMeal === 'Lunch') {
-
+                apiEndpoint = 'addLunch';
             }
             else if (selectedMeal === 'Dinner') {
-
+                apiEndpoint = 'addDinner';
             }
             else if (selectedMeal === 'Snack') {
+                apiEndpoint = 'addSnack';
+            }
 
+            // send api request //
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/api/v1/nutrition/${apiEndpoint}`,
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    }
+                );
+                if (response.ok) {
+                    console.log(response);
+                } else {
+                    const error = await response.json();
+                    console.log(error);
+                }
+            } catch (err) {
+                console.log(`Error: ${err}`);
+                //toast.error('An error occurred, please try again.');
             }
         }
     }
 
     return (
         <Container>
-            <div id='meals-header-div'>
+            <div id='date-div'>
                 <h1>{date}</h1>
             </div>
-            <div id='breakfasts-div'>
+            <div className='meals-div'>
                 <h1>Breakfasts</h1>
                 <div>
                     <p>Empty</p>
                 </div>
                 <button onClick={() => {
-                    setSelectedMealAndOpenModal('Breakfast')
+                    openModal('Breakfast')
                 }}>
                     Add Breakfast
                 </button>
             </div>
-            <div id='lunches-div'>
+            <div className='meals-div'>
                 <h1>Lunches</h1>
                 <div>
                     <p>Empty</p>
                 </div>
                 <button onClick={() => {
-                    setSelectedMealAndOpenModal('Lunch')
+                    openModal('Lunch')
                 }}>
                     Add Lunch
                 </button>
             </div>
-            <div id='dinners-div'>
+            <div className='meals-div'>
                 <h1>Dinners</h1>
                 <div>
                     <p>Empty</p>
                 </div>
                 <button onClick={() => {
-                    setSelectedMealAndOpenModal('Dinner')
+                    openModal('Dinner')
                 }}>
                     Add Dinner
                 </button>
             </div>
-            <div id='snacks-div'>
+            <div className='meals-div'>
                 <h1>Snacks</h1>
                 <div>
                     <p>Empty</p>
                 </div>
                 <button onClick={() => {
-                    setSelectedMealAndOpenModal('Snack')
+                    openModal('Snack')
                 }}>
                     Add Snack
                 </button>
@@ -270,8 +375,9 @@ const Meals = () => {
                     <form onSubmit={submitForm}>
                         <div>
                             <p>{formDataErrors.nameError}</p>
-                            <label>Name: <StyledFaStarOfLife /></label>
+                            <label htmlFor='meal-name'>Name: <StyledFaStarOfLife /></label>
                             <input
+                                id='meal-name'
                                 type='text'
                                 value={formData.name}
                                 onChange={(e) => {
@@ -280,13 +386,15 @@ const Meals = () => {
                                         name: e.target.value
                                     }));
                                 }}
+                                autoFocus
                             />
                         </div>
 
                         <div>
                             <p>{formDataErrors.caloriesError}</p>
-                            <label>Calories:</label>
+                            <label htmlFor='meal-calories'>Calories:</label>
                             <input
+                                id='meal-calories'
                                 type='number'
                                 value={formData.calories}
                                 onChange={(e) => {
@@ -299,8 +407,9 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label>Total Fat:</label>
+                            <label htmlFor='meal-total-fat' title='grams'>Total Fat:</label>
                             <input
+                                id='meal-total-fat'
                                 type='number'
                                 value={formData.totalFat}
                                 onChange={(e) => {
@@ -313,8 +422,9 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label>Cholesterol:</label>
+                            <label htmlFor='meal-cholesterol' title='milligrams'>Cholesterol:</label>
                             <input
+                                id='meal-cholesterol'
                                 type='number'
                                 value={formData.cholesterol}
                                 onChange={(e) => {
@@ -327,8 +437,9 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label>Sodium:</label>
+                            <label htmlFor='meal-sodium' title='milligrams'>Sodium:</label>
                             <input
+                                id='meal-sodium'
                                 type='number'
                                 value={formData.sodium}
                                 onChange={(e) => {
@@ -341,8 +452,9 @@ const Meals = () => {
                         </div>
                         
                         <div>
-                            <label>Total Carbohydrate:</label>
+                            <label htmlFor='meal-total-carbohydrate' title='grams'>Total Carbohydrate:</label>
                             <input
+                                id='meal-total-carbohydrate'
                                 type='number'
                                 value={formData.totalCarbohydrate}
                                 onChange={(e) => {
@@ -355,8 +467,9 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label>Protein:</label>
+                            <label htmlFor='meal-protein' title='grams'>Protein:</label>
                             <input
+                                id='meal-protein'
                                 type='number'
                                 value={formData.protein}
                                 onChange={(e) => {
@@ -369,15 +482,16 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <p>{formDataErrors.timestampError}</p>
-                            <label>Date & Time Consumed: <StyledFaStarOfLife /></label>
+                            <p>{formDataErrors.consumedAtError}</p>
+                            <label htmlFor='meal-timestamp'>Consumed At: <StyledFaStarOfLife /></label>
                             <input
+                                id='meal-timestamp'
                                 type='datetime-local'
-                                value={formData.timestamp}
+                                value={formData.consumedAt}
                                 onChange={(e) => {
                                     setFormData((prevFormData) => ({
                                         ...prevFormData,
-                                        timestamp: e.target.value
+                                        consumedAt: e.target.value
                                     }));
                                 }}
                             />
@@ -401,8 +515,8 @@ const CustomModal = styled(Modal)`
 
     #content-modal-div {
         width: 450px;
-        height: 550px;
-        padding: 20px;
+        height: auto;
+        padding: 15px;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -412,7 +526,7 @@ const CustomModal = styled(Modal)`
         border: 1px solid black;
 
         h1 {
-            margin: 10px 0 10px 0;
+            margin: 5px 0 5px 0;
             text-align: center;
         }
 
@@ -445,6 +559,7 @@ const CustomModal = styled(Modal)`
                 border: 1px solid black;
                 border-radius: 10px;
                 background-color: white;
+                cursor: pointer;
             }
         }
     }
@@ -457,5 +572,5 @@ const StyledFaCircleXmark = styled(FaCircleXmark)`
 `;
 const StyledFaStarOfLife = styled(FaStarOfLife)`
     color: red;
-    font-size: 12px;
+    font-size: 11px;
 `;
