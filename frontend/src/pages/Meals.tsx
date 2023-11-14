@@ -19,7 +19,7 @@ const Container = styled.div`
     background-color: #D9D9D9;
 
     #date-div {
-        border: 1px solid blue;
+        border-bottom: 3px solid #4484CE;
         h1 {
             margin: 10px 0 10px 0;
             text-align: center;
@@ -27,8 +27,7 @@ const Container = styled.div`
     }
 
     .meals-div {
-        padding: 10px;
-        border: 1px solid green;
+        padding: 15px;
         text-align: center;
 
         h1 {
@@ -36,62 +35,62 @@ const Container = styled.div`
             text-align: center;
         }
 
-        div {
-            table {
-                margin: 0 auto;
-                width: 80%;
+        table {
+            margin: 0 auto;
+            margin-bottom: 10px;
+            width: 80%;
+            padding: 2px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            thead tr {
+                background-color: #88BBD6;
+            }
+            .th1 {
+                width: 20%;
+                padding: 2px;
+            }
+            .th2, .th3, .th4, .th5, .th6, .th7, .th8 . th9 {
+                width: 10%;
+                padding: 2px;
+            }
+            .td1 {
+                width: 20%;
+                padding: 2px;
+                background-color: white;
+            }
+            .td2, .td3, .td4, .td5, .td6, .td7, .td8, .td9 {
+                width: 10%;
+                padding: 2px;
+                background-color: white;
+            }
+            tbody tr .td9 button {
+                width: 40px;
+                padding: 2px;
+                cursor: pointer;
+                background-color: white;
                 border: 1px solid black;
-                border-collapse: collapse;
-                .th1, .td1 {
-                    width: 15%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th2, .td2 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th3, .td3 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th4, .td4 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th5, .td5 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th6, .td6 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th7, .td7 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th8, .td8 {
-                    width: 10%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
-                .th9, .td9 {
-                    width: 5%;
-                    padding: 3px;
-                    border: 1px solid black;
-                }
+                border-radius: 10px;
+            }
+            tfoot tr {
+                background-color: #88BBD6;
+            }
+            .tf1 {
+                width: 20%;
+                padding: 5px;
+            }
+            .tf2, .tf3, .tf4, .tf5, .tf6, .tf7, .tf8, .tf9 {
+                width: 10%;
+                padding: 5px;
+                font-weight: bold;
             }
         }
 
-        button {
+        .add-meal-btn {
+            width: 110px;
+            height: 25px;
             cursor: pointer;
+            font-weight: bold;
             background-color: white;
             border: 1px solid black;
             border-radius: 10px;
@@ -123,11 +122,52 @@ const Meals = () => {
         consumedAt: string;
         createdAt: string;
         updatedAt: null | string;
-    }
+    };
     const [breakfasts, setBreakfasts] = useState<MealDataTypes[]>([]);
     const [lunches, setLunches] = useState<MealDataTypes[]>([]);
     const [dinners, setDinners] = useState<MealDataTypes[]>([]);
     const [snacks, setSnacks] = useState<MealDataTypes[]>([]);
+
+    interface MealSumDataTypes {
+        sumCalories: number;
+        sumTotalFat: number;
+        sumCholesterol: number;
+        sumSodium: number;
+        sumTotalCarbohydrate: number;
+        sumProtein: number;
+    };
+    const [sumBreakfasts, setSumBreakfasts] = useState<MealSumDataTypes>({
+        sumCalories: 0,
+        sumTotalFat: 0,
+        sumCholesterol: 0,
+        sumSodium: 0,
+        sumTotalCarbohydrate: 0,
+        sumProtein: 0
+    });
+    const [sumLunches, setSumLunches] = useState<MealSumDataTypes>({
+        sumCalories: 0,
+        sumTotalFat: 0,
+        sumCholesterol: 0,
+        sumSodium: 0,
+        sumTotalCarbohydrate: 0,
+        sumProtein: 0
+    });
+    const [sumDinners, setSumDinners] = useState<MealSumDataTypes>({
+        sumCalories: 0,
+        sumTotalFat: 0,
+        sumCholesterol: 0,
+        sumSodium: 0,
+        sumTotalCarbohydrate: 0,
+        sumProtein: 0
+    });
+    const [sumSnacks, setSumSnacks] = useState<MealSumDataTypes>({
+        sumCalories: 0,
+        sumTotalFat: 0,
+        sumCholesterol: 0,
+        sumSodium: 0,
+        sumTotalCarbohydrate: 0,
+        sumProtein: 0
+    });
 
     interface FormDataTypes {
         name: string;
@@ -175,29 +215,61 @@ const Meals = () => {
         const getDailyMeals = async (date: string) => {
             try {
                 const response = await fetch(
-                  'http://localhost:5000/api/v1/nutrition/getDailyMeals',
-                  {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ date: date })
-                  }
+                    'http://localhost:5000/api/v1/nutrition/getDailyMeals',
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ date: date })
+                    }
                 );
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
 
-                    let dbBreakfasts: MealDataTypes[] = [];
-                    let dbLunches: MealDataTypes[] = [];
-                    let dbDinners: MealDataTypes[] = [];
-                    let dbSnacks: MealDataTypes[] = [];
+                    let tempBreakfasts: MealDataTypes[] = [];
+                    let tempLunches: MealDataTypes[] = [];
+                    let tempDinners: MealDataTypes[] = [];
+                    let tempSnacks: MealDataTypes[] = [];
+                    let tempSumBreakfasts: MealSumDataTypes = {
+                        sumCalories: 0,
+                        sumTotalFat: 0,
+                        sumCholesterol: 0,
+                        sumSodium: 0,
+                        sumTotalCarbohydrate: 0,
+                        sumProtein: 0
+                    };
+                    let tempSumLunches: MealSumDataTypes = {
+                        sumCalories: 0,
+                        sumTotalFat: 0,
+                        sumCholesterol: 0,
+                        sumSodium: 0,
+                        sumTotalCarbohydrate: 0,
+                        sumProtein: 0
+                    };
+                    let tempSumDinners: MealSumDataTypes = {
+                        sumCalories: 0,
+                        sumTotalFat: 0,
+                        sumCholesterol: 0,
+                        sumSodium: 0,
+                        sumTotalCarbohydrate: 0,
+                        sumProtein: 0
+                    };
+                    let tempSumSnacks: MealSumDataTypes = {
+                        sumCalories: 0,
+                        sumTotalFat: 0,
+                        sumCholesterol: 0,
+                        sumSodium: 0,
+                        sumTotalCarbohydrate: 0,
+                        sumProtein: 0
+                    };
 
                     for (let i = 0; i < data.length; i++) {
                         switch(data[i].meal_type) {
                             case 'breakfast':
-                                dbBreakfasts.push({
+                                tempBreakfasts.push({
                                     id: data[i].id,
                                     userId: data[i].user_id,
                                     mealType: data[i].meal_type,
@@ -212,9 +284,27 @@ const Meals = () => {
                                     createdAt: data[i].created_at,
                                     updatedAt: data[i].updated_at
                                 });
+                                if (data[i].calories) {
+                                    tempSumBreakfasts.sumCalories += data[i].calories;
+                                }
+                                if (data[i].total_fat) {
+                                    tempSumBreakfasts.sumTotalFat += data[i].total_fat;
+                                }
+                                if (data[i].cholesterol) {
+                                    tempSumBreakfasts.sumCholesterol += data[i].cholesterol;
+                                }
+                                if (data[i].sodium) {
+                                    tempSumBreakfasts.sumSodium += data[i].sodium;
+                                }
+                                if (data[i].total_carbohydrate) {
+                                    tempSumBreakfasts.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                }
+                                if (data[i].protein) {
+                                    tempSumBreakfasts.sumProtein += data[i].protein;
+                                }
                                 break;
                             case 'lunch':
-                                dbLunches.push({
+                                tempLunches.push({
                                     id: data[i].id,
                                     userId: data[i].user_id,
                                     mealType: data[i].meal_type,
@@ -229,9 +319,27 @@ const Meals = () => {
                                     createdAt: data[i].created_at,
                                     updatedAt: data[i].updated_at
                                 });
+                                if (data[i].calories) {
+                                    tempSumLunches.sumCalories += data[i].calories;
+                                }
+                                if (data[i].total_fat) {
+                                    tempSumLunches.sumTotalFat += data[i].total_fat;
+                                }
+                                if (data[i].cholesterol) {
+                                    tempSumLunches.sumCholesterol += data[i].cholesterol;
+                                }
+                                if (data[i].sodium) {
+                                    tempSumLunches.sumSodium += data[i].sodium;
+                                }
+                                if (data[i].total_carbohydrate) {
+                                    tempSumLunches.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                }
+                                if (data[i].protein) {
+                                    tempSumLunches.sumProtein += data[i].protein;
+                                }
                                 break;
                             case 'dinner':
-                                dbDinners.push({
+                                tempDinners.push({
                                     id: data[i].id,
                                     userId: data[i].user_id,
                                     mealType: data[i].meal_type,
@@ -246,9 +354,27 @@ const Meals = () => {
                                     createdAt: data[i].created_at,
                                     updatedAt: data[i].updated_at
                                 });
+                                if (data[i].calories) {
+                                    tempSumDinners.sumCalories += data[i].calories;
+                                }
+                                if (data[i].total_fat) {
+                                    tempSumDinners.sumTotalFat += data[i].total_fat;
+                                }
+                                if (data[i].cholesterol) {
+                                    tempSumDinners.sumCholesterol += data[i].cholesterol;
+                                }
+                                if (data[i].sodium) {
+                                    tempSumDinners.sumSodium += data[i].sodium;
+                                }
+                                if (data[i].total_carbohydrate) {
+                                    tempSumDinners.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                }
+                                if (data[i].protein) {
+                                    tempSumDinners.sumProtein += data[i].protein;
+                                }
                                 break;
                             case 'snack':
-                                dbSnacks.push({
+                                tempSnacks.push({
                                     id: data[i].id,
                                     userId: data[i].user_id,
                                     mealType: data[i].meal_type,
@@ -263,20 +389,43 @@ const Meals = () => {
                                     createdAt: data[i].created_at,
                                     updatedAt: data[i].updated_at
                                 });
+                                if (data[i].calories) {
+                                    tempSumSnacks.sumCalories += data[i].calories;
+                                }
+                                if (data[i].total_fat) {
+                                    tempSumSnacks.sumTotalFat += data[i].total_fat;
+                                }
+                                if (data[i].cholesterol) {
+                                    tempSumSnacks.sumCholesterol += data[i].cholesterol;
+                                }
+                                if (data[i].sodium) {
+                                    tempSumSnacks.sumSodium += data[i].sodium;
+                                }
+                                if (data[i].total_carbohydrate) {
+                                    tempSumSnacks.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                }
+                                if (data[i].protein) {
+                                    tempSumSnacks.sumProtein += data[i].protein;
+                                }
                                 break;
                             default:
                                 break;
                         }
                     }
 
-                    setBreakfasts(dbBreakfasts);
-                    setLunches(dbLunches);
-                    setDinners(dbDinners);
-                    setSnacks(dbSnacks);
+                    setBreakfasts(tempBreakfasts);
+                    setLunches(tempLunches);
+                    setDinners(tempDinners);
+                    setSnacks(tempSnacks);
+                    setSumBreakfasts(tempSumBreakfasts);
+                    setSumLunches(tempSumLunches);
+                    setSumDinners(tempSumDinners);
+                    setSumSnacks(tempSumSnacks);
                 }
-              } catch (err) {
+            }
+            catch (err) {
                 console.log(`Fetch error: ${err}`);
-              }
+            }
         }
 
         const getCurrentDate = () => {
@@ -290,12 +439,7 @@ const Meals = () => {
             getDailyMeals(`${currentYear}-${currentMonth}-${currentDay}`);
         }
 
-        if (user.authenticated) {
-            getCurrentDate();
-        }
-        else {
-            navigate('/');
-        }
+        getCurrentDate();
     }, []);
 
     const openModal = (meal:string) => {
@@ -487,21 +631,20 @@ const Meals = () => {
             </div>
             <div className='meals-div'>
                 <h1>Breakfasts</h1>
-                <div>
                 {
-                    breakfasts.length > 0 ? (
+                    breakfasts.length > 0 && (
                         <table>
                             <thead>
                                 <tr>
-                                    <th className='th1'>Name</th>
-                                    <th className='th2'>Calories</th>
-                                    <th className='th3'>Total Fat</th>
-                                    <th className='th4'>Cholesterol</th>
-                                    <th className='th5'>Sodium</th>
-                                    <th className='th6'>Total Carbohydrate</th>
-                                    <th className='th7'>Protein</th>
-                                    <th className='th8'>Consumed At</th>
-                                    <th className='th9'>Edit?</th>
+                                    <th className='th1' scope='col'>Name</th>
+                                    <th className='th2' scope='col'>Calories</th>
+                                    <th className='th3' scope='col'>Total Fat</th>
+                                    <th className='th4' scope='col'>Cholesterol</th>
+                                    <th className='th5' scope='col'>Sodium</th>
+                                    <th className='th6' scope='col'>Total Carbohydrate</th>
+                                    <th className='th7' scope='col'>Protein</th>
+                                    <th className='th8' scope='col'>Consumed At</th>
+                                    <th className='th9' scope='col'>Edit?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -530,35 +673,45 @@ const Meals = () => {
                                 ))
                             }
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th className='tf1' scope='row'>Totals</th>
+                                    <td className='tf2'>{sumBreakfasts.sumCalories}</td>
+                                    <td className='tf3'>{sumBreakfasts.sumTotalFat}</td>
+                                    <td className='tf4'>{sumBreakfasts.sumCholesterol}</td>
+                                    <td className='tf5'>{sumBreakfasts.sumSodium}</td>
+                                    <td className='tf6'>{sumBreakfasts.sumTotalCarbohydrate}</td>
+                                    <td className='tf7'>{sumBreakfasts.sumProtein}</td>
+                                    <td className='tf8'></td>
+                                    <td className='tf9'></td>
+                                </tr>
+                            </tfoot>
                         </table>
-                    ) : (
-                        <p>No Data</p>
                     )
                 }
-                </div>
-                <button onClick={() => {
+                <button className='add-meal-btn' onClick={() => {
                     openModal('Breakfast')
                 }}>
                     Add Breakfast
                 </button>
             </div>
+            <br />
             <div className='meals-div'>
                 <h1>Lunches</h1>
-                <div>
                 {
-                    lunches.length > 0 ? (
+                    lunches.length > 0 && (
                         <table>
                             <thead>
                                 <tr>
-                                    <th className='th1'>Name</th>
-                                    <th className='th2'>Calories</th>
-                                    <th className='th3'>Total Fat</th>
-                                    <th className='th4'>Cholesterol</th>
-                                    <th className='th5'>Sodium</th>
-                                    <th className='th6'>Total Carbohydrate</th>
-                                    <th className='th7'>Protein</th>
-                                    <th className='th8'>Consumed At</th>
-                                    <th className='th9'>Edit?</th>
+                                    <th className='th1' scope='col'>Name</th>
+                                    <th className='th2' scope='col'>Calories</th>
+                                    <th className='th3' scope='col'>Total Fat</th>
+                                    <th className='th4' scope='col'>Cholesterol</th>
+                                    <th className='th5' scope='col'>Sodium</th>
+                                    <th className='th6' scope='col'>Total Carbohydrate</th>
+                                    <th className='th7' scope='col'>Protein</th>
+                                    <th className='th8' scope='col'>Consumed At</th>
+                                    <th className='th9' scope='col'>Edit?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -587,35 +740,45 @@ const Meals = () => {
                                 ))
                             }
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th className='tf1' scope='row'>Totals</th>
+                                    <td className='tf2'>{sumLunches.sumCalories}</td>
+                                    <td className='tf3'>{sumLunches.sumTotalFat}</td>
+                                    <td className='tf4'>{sumLunches.sumCholesterol}</td>
+                                    <td className='tf5'>{sumLunches.sumSodium}</td>
+                                    <td className='tf6'>{sumLunches.sumTotalCarbohydrate}</td>
+                                    <td className='tf7'>{sumLunches.sumProtein}</td>
+                                    <td className='tf8'></td>
+                                    <td className='tf9'></td>
+                                </tr>
+                            </tfoot>
                         </table>
-                    ) : (
-                        <p>No Data</p>
                     )
                 }
-                </div>
-                <button onClick={() => {
+                <button className='add-meal-btn' onClick={() => {
                     openModal('Lunch')
                 }}>
                     Add Lunch
                 </button>
             </div>
+            <br />
             <div className='meals-div'>
                 <h1>Dinners</h1>
-                <div>
                 {
-                    dinners.length > 0 ? (
+                    dinners.length > 0 && (
                         <table>
                             <thead>
                                 <tr>
-                                    <th className='th1'>Name</th>
-                                    <th className='th2'>Calories</th>
-                                    <th className='th3'>Total Fat</th>
-                                    <th className='th4'>Cholesterol</th>
-                                    <th className='th5'>Sodium</th>
-                                    <th className='th6'>Total Carbohydrate</th>
-                                    <th className='th7'>Protein</th>
-                                    <th className='th8'>Consumed At</th>
-                                    <th className='th9'>Edit?</th>
+                                    <th className='th1' scope='col'>Name</th>
+                                    <th className='th2' scope='col'>Calories</th>
+                                    <th className='th3' scope='col'>Total Fat</th>
+                                    <th className='th4' scope='col'>Cholesterol</th>
+                                    <th className='th5' scope='col'>Sodium</th>
+                                    <th className='th6' scope='col'>Total Carbohydrate</th>
+                                    <th className='th7' scope='col'>Protein</th>
+                                    <th className='th8' scope='col'>Consumed At</th>
+                                    <th className='th9' scope='col'>Edit?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -644,35 +807,45 @@ const Meals = () => {
                                 ))
                             }
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th className='tf1' scope='row'>Totals</th>
+                                    <td className='tf2'>{sumDinners.sumCalories}</td>
+                                    <td className='tf3'>{sumDinners.sumTotalFat}</td>
+                                    <td className='tf4'>{sumDinners.sumCholesterol}</td>
+                                    <td className='tf5'>{sumDinners.sumSodium}</td>
+                                    <td className='tf6'>{sumDinners.sumTotalCarbohydrate}</td>
+                                    <td className='tf7'>{sumDinners.sumProtein}</td>
+                                    <td className='tf8'></td>
+                                    <td className='tf9'></td>
+                                </tr>
+                            </tfoot>
                         </table>
-                    ) : (
-                        <p>No Data</p>
                     )
                 }
-                </div>
-                <button onClick={() => {
+                <button className='add-meal-btn' onClick={() => {
                     openModal('Dinner')
                 }}>
                     Add Dinner
                 </button>
             </div>
+            <br />
             <div className='meals-div'>
                 <h1>Snacks</h1>
-                <div>
                 {
-                    snacks.length > 0 ? (
+                    snacks.length > 0 && (
                         <table>
                             <thead>
                                 <tr>
-                                    <th className='th1'>Name</th>
-                                    <th className='th2'>Calories</th>
-                                    <th className='th3'>Total Fat</th>
-                                    <th className='th4'>Cholesterol</th>
-                                    <th className='th5'>Sodium</th>
-                                    <th className='th6'>Total Carbohydrate</th>
-                                    <th className='th7'>Protein</th>
-                                    <th className='th8'>Consumed At</th>
-                                    <th className='th9'>Edit?</th>
+                                    <th className='th1' scope='col'>Name</th>
+                                    <th className='th2' scope='col'>Calories</th>
+                                    <th className='th3' scope='col'>Total Fat</th>
+                                    <th className='th4' scope='col'>Cholesterol</th>
+                                    <th className='th5' scope='col'>Sodium</th>
+                                    <th className='th6' scope='col'>Total Carbohydrate</th>
+                                    <th className='th7' scope='col'>Protein</th>
+                                    <th className='th8' scope='col'>Consumed At</th>
+                                    <th className='th9' scope='col'>Edit?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -701,18 +874,30 @@ const Meals = () => {
                                 ))
                             }
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th className='tf1' scope='row'>Totals</th>
+                                    <td className='tf2'>{sumSnacks.sumCalories}</td>
+                                    <td className='tf3'>{sumSnacks.sumTotalFat}</td>
+                                    <td className='tf4'>{sumSnacks.sumCholesterol}</td>
+                                    <td className='tf5'>{sumSnacks.sumSodium}</td>
+                                    <td className='tf6'>{sumSnacks.sumTotalCarbohydrate}</td>
+                                    <td className='tf7'>{sumSnacks.sumProtein}</td>
+                                    <td className='tf8'></td>
+                                    <td className='tf9'></td>
+                                </tr>
+                            </tfoot>
                         </table>
-                    ) : (
-                        <p>No Data</p>
                     )
                 }
-                </div>
-                <button onClick={() => {
+                <button className='add-meal-btn' onClick={() => {
                     openModal('Snack')
                 }}>
                     Add Snack
                 </button>
             </div>
+
+            <br/>
 
             <CustomModal
                 isOpen={modalIsOpen}
