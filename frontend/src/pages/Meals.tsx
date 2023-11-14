@@ -6,7 +6,7 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaCircleXmark, FaStarOfLife } from 'react-icons/fa6';
+import { FaRectangleXmark, FaStarOfLife } from 'react-icons/fa6';
 
 // set the app root element //
 Modal.setAppElement('#root');
@@ -35,11 +35,66 @@ const Container = styled.div`
             margin: 0 0 5px 0;
             text-align: center;
         }
-        div {
 
+        div {
+            table {
+                margin: 0 auto;
+                width: 80%;
+                border: 1px solid black;
+                border-collapse: collapse;
+                .th1, .td1 {
+                    width: 15%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th2, .td2 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th3, .td3 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th4, .td4 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th5, .td5 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th6, .td6 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th7, .td7 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th8, .td8 {
+                    width: 10%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+                .th9, .td9 {
+                    width: 5%;
+                    padding: 3px;
+                    border: 1px solid black;
+                }
+            }
         }
+
         button {
-            
+            cursor: pointer;
+            background-color: white;
+            border: 1px solid black;
+            border-radius: 10px;
         }
     }
 `;
@@ -55,6 +110,7 @@ const Meals = () => {
     interface MealDataTypes {
         id: number;
         userId: number;
+        mealType: string;
         name: string;
         calories: null | number;
         totalFat: null | number;
@@ -127,10 +183,94 @@ const Meals = () => {
                     body: JSON.stringify({ date: date })
                   }
                 );
-                console.log(response);
                 if (response.ok) {
-                  const data = await response.json();
-                  console.log(data);
+                    const data = await response.json();
+                    console.log(data);
+
+                    let dbBreakfasts: MealDataTypes[] = [];
+                    let dbLunches: MealDataTypes[] = [];
+                    let dbDinners: MealDataTypes[] = [];
+                    let dbSnacks: MealDataTypes[] = [];
+
+                    for (let i = 0; i < data.length; i++) {
+                        switch(data[i].meal_type) {
+                            case 'breakfast':
+                                dbBreakfasts.push({
+                                    id: data[i].id,
+                                    userId: data[i].user_id,
+                                    mealType: data[i].meal_type,
+                                    name: data[i].name,
+                                    calories: data[i].calories,
+                                    totalFat: data[i].total_fat,
+                                    cholesterol: data[i].cholesterol,
+                                    sodium: data[i].sodium,
+                                    totalCarbohydrate: data[i].total_carbohydrate,
+                                    protein: data[i].protein,
+                                    consumedAt: data[i].consumed_at,
+                                    createdAt: data[i].created_at,
+                                    updatedAt: data[i].updated_at
+                                });
+                                break;
+                            case 'lunch':
+                                dbLunches.push({
+                                    id: data[i].id,
+                                    userId: data[i].user_id,
+                                    mealType: data[i].meal_type,
+                                    name: data[i].name,
+                                    calories: data[i].calories,
+                                    totalFat: data[i].total_fat,
+                                    cholesterol: data[i].cholesterol,
+                                    sodium: data[i].sodium,
+                                    totalCarbohydrate: data[i].total_carbohydrate,
+                                    protein: data[i].protein,
+                                    consumedAt: data[i].consumed_at,
+                                    createdAt: data[i].created_at,
+                                    updatedAt: data[i].updated_at
+                                });
+                                break;
+                            case 'dinner':
+                                dbDinners.push({
+                                    id: data[i].id,
+                                    userId: data[i].user_id,
+                                    mealType: data[i].meal_type,
+                                    name: data[i].name,
+                                    calories: data[i].calories,
+                                    totalFat: data[i].total_fat,
+                                    cholesterol: data[i].cholesterol,
+                                    sodium: data[i].sodium,
+                                    totalCarbohydrate: data[i].total_carbohydrate,
+                                    protein: data[i].protein,
+                                    consumedAt: data[i].consumed_at,
+                                    createdAt: data[i].created_at,
+                                    updatedAt: data[i].updated_at
+                                });
+                                break;
+                            case 'snack':
+                                dbSnacks.push({
+                                    id: data[i].id,
+                                    userId: data[i].user_id,
+                                    mealType: data[i].meal_type,
+                                    name: data[i].name,
+                                    calories: data[i].calories,
+                                    totalFat: data[i].total_fat,
+                                    cholesterol: data[i].cholesterol,
+                                    sodium: data[i].sodium,
+                                    totalCarbohydrate: data[i].total_carbohydrate,
+                                    protein: data[i].protein,
+                                    consumedAt: data[i].consumed_at,
+                                    createdAt: data[i].created_at,
+                                    updatedAt: data[i].updated_at
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    setBreakfasts(dbBreakfasts);
+                    setLunches(dbLunches);
+                    setDinners(dbDinners);
+                    setSnacks(dbSnacks);
                 }
               } catch (err) {
                 console.log(`Fetch error: ${err}`);
@@ -341,7 +481,53 @@ const Meals = () => {
             <div className='meals-div'>
                 <h1>Breakfasts</h1>
                 <div>
-                    <p>Empty</p>
+                {
+                    breakfasts.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th className='th1'>Name</th>
+                                    <th className='th2'>Calories</th>
+                                    <th className='th3'>Total Fat</th>
+                                    <th className='th4'>Cholesterol</th>
+                                    <th className='th5'>Sodium</th>
+                                    <th className='th6'>Total Carbohydrate</th>
+                                    <th className='th7'>Protein</th>
+                                    <th className='th8'>Consumed At</th>
+                                    <th className='th9'>Edit?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                breakfasts.map((breakfast) => (
+                                    <tr key={breakfast.id}>
+                                        <td className='td1'>{breakfast.name}</td>
+                                        <td className='td2'>{breakfast.calories === null ? 'N/A' : breakfast.calories}</td>
+                                        <td className='td3'>{breakfast.totalFat === null ? 'N/A' : breakfast.totalFat}</td>
+                                        <td className='td4'>{breakfast.cholesterol === null ? 'N/A' : breakfast.cholesterol}</td>
+                                        <td className='td5'>{breakfast.sodium === null ? 'N/A' : breakfast.sodium}</td>
+                                        <td className='td6'>{breakfast.totalCarbohydrate === null ? 'N/A' : breakfast.totalCarbohydrate}</td>
+                                        <td className='td7'>{breakfast.protein === null ? 'N/A' : breakfast.protein}</td>
+                                        <td className='td8'>
+                                        {
+                                            new Date(breakfast.consumedAt).toLocaleString('en-US', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                timeZoneName: 'short'
+                                            })
+                                        }
+                                        </td>
+                                        <td className='td9'><button>Edit</button></td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No Data</p>
+                    )
+                }
                 </div>
                 <button onClick={() => {
                     openModal('Breakfast')
@@ -352,7 +538,53 @@ const Meals = () => {
             <div className='meals-div'>
                 <h1>Lunches</h1>
                 <div>
-                    <p>Empty</p>
+                {
+                    lunches.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th className='th1'>Name</th>
+                                    <th className='th2'>Calories</th>
+                                    <th className='th3'>Total Fat</th>
+                                    <th className='th4'>Cholesterol</th>
+                                    <th className='th5'>Sodium</th>
+                                    <th className='th6'>Total Carbohydrate</th>
+                                    <th className='th7'>Protein</th>
+                                    <th className='th8'>Consumed At</th>
+                                    <th className='th9'>Edit?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                lunches.map((lunch) => (
+                                    <tr key={lunch.id}>
+                                        <td className='td1'>{lunch.name}</td>
+                                        <td className='td2'>{lunch.calories === null ? 'N/A' : lunch.calories}</td>
+                                        <td className='td3'>{lunch.totalFat === null ? 'N/A' : lunch.totalFat}</td>
+                                        <td className='td4'>{lunch.cholesterol === null ? 'N/A' : lunch.cholesterol}</td>
+                                        <td className='td5'>{lunch.sodium === null ? 'N/A' : lunch.sodium}</td>
+                                        <td className='td6'>{lunch.totalCarbohydrate === null ? 'N/A' : lunch.totalCarbohydrate}</td>
+                                        <td className='td7'>{lunch.protein === null ? 'N/A' : lunch.protein}</td>
+                                        <td className='td8'>
+                                        {
+                                            new Date(lunch.consumedAt).toLocaleString('en-US', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                timeZoneName: 'short'
+                                            })
+                                        }
+                                        </td>
+                                        <td className='td9'><button>Edit</button></td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No Data</p>
+                    )
+                }
                 </div>
                 <button onClick={() => {
                     openModal('Lunch')
@@ -363,7 +595,53 @@ const Meals = () => {
             <div className='meals-div'>
                 <h1>Dinners</h1>
                 <div>
-                    <p>Empty</p>
+                {
+                    dinners.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th className='th1'>Name</th>
+                                    <th className='th2'>Calories</th>
+                                    <th className='th3'>Total Fat</th>
+                                    <th className='th4'>Cholesterol</th>
+                                    <th className='th5'>Sodium</th>
+                                    <th className='th6'>Total Carbohydrate</th>
+                                    <th className='th7'>Protein</th>
+                                    <th className='th8'>Consumed At</th>
+                                    <th className='th9'>Edit?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                dinners.map((dinner) => (
+                                    <tr key={dinner.id}>
+                                        <td className='td1'>{dinner.name}</td>
+                                        <td className='td2'>{dinner.calories === null ? 'N/A' : dinner.calories}</td>
+                                        <td className='td3'>{dinner.totalFat === null ? 'N/A' : dinner.totalFat}</td>
+                                        <td className='td4'>{dinner.cholesterol === null ? 'N/A' : dinner.cholesterol}</td>
+                                        <td className='td5'>{dinner.sodium === null ? 'N/A' : dinner.sodium}</td>
+                                        <td className='td6'>{dinner.totalCarbohydrate === null ? 'N/A' : dinner.totalCarbohydrate}</td>
+                                        <td className='td7'>{dinner.protein === null ? 'N/A' : dinner.protein}</td>
+                                        <td className='td8'>
+                                        {
+                                            new Date(dinner.consumedAt).toLocaleString('en-US', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                timeZoneName: 'short'
+                                            })
+                                        }
+                                        </td>
+                                        <td className='td9'><button>Edit</button></td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No Data</p>
+                    )
+                }
                 </div>
                 <button onClick={() => {
                     openModal('Dinner')
@@ -374,7 +652,53 @@ const Meals = () => {
             <div className='meals-div'>
                 <h1>Snacks</h1>
                 <div>
-                    <p>Empty</p>
+                {
+                    snacks.length > 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th className='th1'>Name</th>
+                                    <th className='th2'>Calories</th>
+                                    <th className='th3'>Total Fat</th>
+                                    <th className='th4'>Cholesterol</th>
+                                    <th className='th5'>Sodium</th>
+                                    <th className='th6'>Total Carbohydrate</th>
+                                    <th className='th7'>Protein</th>
+                                    <th className='th8'>Consumed At</th>
+                                    <th className='th9'>Edit?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                snacks.map((snack) => (
+                                    <tr key={snack.id}>
+                                        <td className='td1'>{snack.name}</td>
+                                        <td className='td2'>{snack.calories === null ? 'N/A' : snack.calories}</td>
+                                        <td className='td3'>{snack.totalFat === null ? 'N/A' : snack.totalFat}</td>
+                                        <td className='td4'>{snack.cholesterol === null ? 'N/A' : snack.cholesterol}</td>
+                                        <td className='td5'>{snack.sodium === null ? 'N/A' : snack.sodium}</td>
+                                        <td className='td6'>{snack.totalCarbohydrate === null ? 'N/A' : snack.totalCarbohydrate}</td>
+                                        <td className='td7'>{snack.protein === null ? 'N/A' : snack.protein}</td>
+                                        <td className='td8'>
+                                        {
+                                            new Date(snack.consumedAt).toLocaleString('en-US', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                timeZoneName: 'short'
+                                            })
+                                        }
+                                        </td>
+                                        <td className='td9'><button>Edit</button></td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No Data</p>
+                    )
+                }
                 </div>
                 <button onClick={() => {
                     openModal('Snack')
@@ -389,7 +713,7 @@ const Meals = () => {
                 contentLabel='Modal'
             >
                 <div id='content-modal-div'>
-                    <StyledFaCircleXmark onClick={closeModal}/>
+                    <StyledFaRectangleXmark onClick={closeModal}/>
                     <h1>{selectedMeal}</h1>
 
                     <form onSubmit={submitForm}>
@@ -541,7 +865,7 @@ const CustomModal = styled(Modal)`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
+        background-color: #88BBD6;
         text-align: center;
         border: 1px solid black;
 
@@ -584,7 +908,7 @@ const CustomModal = styled(Modal)`
         }
     }
 `;
-const StyledFaCircleXmark = styled(FaCircleXmark)`
+const StyledFaRectangleXmark = styled(FaRectangleXmark)`
     color: red;
     font-size: 20px;
     float: right;

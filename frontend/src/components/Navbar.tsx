@@ -17,7 +17,8 @@ const AuthNavbarContainer = styled.nav`
     background-color: #4484CE;
 
     #header-div {
-        flex: 50%;
+        flex: 80%;
+
         #header-link {
             margin: 0;
             padding-left: 10%;
@@ -27,29 +28,20 @@ const AuthNavbarContainer = styled.nav`
             text-decoration: none;
         }
     }
-    #meals-div {
-        flex: 35%;
-        text-align: center;
-        #meals-link {
-            margin: 0;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            text-decoration: none;
-        }
-    }
+
     #profile-div {
-        flex: 15%;
+        flex: 20%;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
+        justify-content: right;
+        gap: 10%;
+
         #profile-link {
             color: white;
             font-size: 20px;
             font-weight: bold;
             text-decoration: none;
         }
+
         button {
             cursor: pointer;
             display: flex;
@@ -58,6 +50,7 @@ const AuthNavbarContainer = styled.nav`
             background-color: #FF3B3F;
             border: 1px solid white;
             border-radius: 10px;
+            margin-right: 5%;
 
             #styled-fa-power-off {
                 color: white;
@@ -149,9 +142,6 @@ const Navbar = () => {
                 <AuthNavbarContainer>
                     <div id='header-div'>
                         <Link id='header-link' to='/'>Nutrition Tracker</Link>
-                    </div>
-                    <div id='meals-div'>
-                        <Link id='meals-link' to='/meals'>My Meals</Link>
                     </div>
                     <div id='profile-div'>
                         <Link id='profile-link' to='/profile'>{user.firstName}</Link>

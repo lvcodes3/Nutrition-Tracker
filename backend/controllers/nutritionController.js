@@ -214,8 +214,13 @@ const getDailyMeals = (async (req, res) => {
         }
 
         let result = await db.query(
-            `SELECT * FROM breakfasts
-             WHERE user_id=$1 AND DATE(consumed_at)=$2;`,
+            `SELECT 'breakfast' AS meal_type, * FROM breakfasts WHERE user_id=$1 AND DATE(consumed_at)=$2
+             UNION ALL
+             SELECT 'lunch' AS meal_type, * FROM lunches WHERE user_id=$1 AND DATE(consumed_at)=$2
+             UNION ALL
+             SELECT 'dinner' AS meal_type, * FROM dinners WHERE user_id=$1 AND DATE(consumed_at)=$2
+             UNION ALL
+             SELECT 'snack' AS meal_type, * FROM snacks WHERE user_id=$1 AND DATE(consumed_at)=$2;`,
             [req.user.id, date]
         );
         if (result.rowCount === 0) {
