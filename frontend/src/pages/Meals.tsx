@@ -1,6 +1,6 @@
 // dependencies //
 import { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 // context //
@@ -101,6 +101,8 @@ const Container = styled.div`
 
 const Meals = () => {
     const { user, setUser } = useContext(AuthContext);
+
+    const navigate = useNavigate();
 
     const [displayDate, setDisplayDate] = useState<null | string>(null);
     const [queryDate, setQueryDate] = useState<null | string>(null);
@@ -288,7 +290,12 @@ const Meals = () => {
             getDailyMeals(`${currentYear}-${currentMonth}-${currentDay}`);
         }
 
-        getCurrentDate();
+        if (user.authenticated) {
+            getCurrentDate();
+        }
+        else {
+            navigate('/');
+        }
     }, []);
 
     const openModal = (meal:string) => {

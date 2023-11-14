@@ -8,6 +8,7 @@ import { UserType, initialUser, AuthContext } from './context/AuthContext';
 // pages //
 import Home from './pages/Home';
 import Meals from './pages/Meals';
+import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Login from './pages/Login';
 // components //
@@ -60,6 +61,7 @@ function App() {
           <Routes>
             <Route path='/' element={ <Home /> } />
             <Route path='/meals' element={ <Meals /> } />
+            <Route path='/profile' element={ <Profile /> } />
             <Route path='/register' element={ <Register /> } />
             <Route path='/login' element={ <Login /> } />
           </Routes>
