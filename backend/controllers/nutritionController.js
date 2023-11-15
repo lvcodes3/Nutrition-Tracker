@@ -36,7 +36,7 @@ const addBreakfast = (async (req, res) => {
             `INSERT into breakfasts
              (user_id, name, calories, total_fat, cholesterol, sodium, total_carbohydrate, protein, consumed_at)
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *;`,
+             RETURNING 'breakfast' AS meal_type, *;`,
             [req.user.id, name, calories, totalFat, cholesterol, sodium, totalCarbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -87,7 +87,7 @@ const addLunch = (async (req, res) => {
             `INSERT into lunches
              (user_id, name, calories, total_fat, cholesterol, sodium, total_carbohydrate, protein, consumed_at)
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *;`,
+             RETURNING 'lunch' AS meal_type, *;`,
             [req.user.id, name, calories, totalFat, cholesterol, sodium, totalCarbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -138,7 +138,7 @@ const addDinner = (async (req, res) => {
             `INSERT into dinners
              (user_id, name, calories, total_fat, cholesterol, sodium, total_carbohydrate, protein, consumed_at)
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *;`,
+             RETURNING 'dinner' AS meal_type, *;`,
             [req.user.id, name, calories, totalFat, cholesterol, sodium, totalCarbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -189,7 +189,7 @@ const addSnack = (async (req, res) => {
             `INSERT into snacks
              (user_id, name, calories, total_fat, cholesterol, sodium, total_carbohydrate, protein, consumed_at)
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *;`,
+             RETURNING 'snack' AS meal_type, *;`,
             [req.user.id, name, calories, totalFat, cholesterol, sodium, totalCarbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {

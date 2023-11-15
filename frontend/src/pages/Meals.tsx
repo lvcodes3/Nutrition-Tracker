@@ -6,7 +6,7 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaRectangleXmark, FaStarOfLife } from 'react-icons/fa6';
+import { FaXmark, FaStarOfLife } from 'react-icons/fa6';
 
 // set the app root element //
 Modal.setAppElement('#root');
@@ -69,7 +69,7 @@ const Container = styled.div`
                 padding: 2px;
                 cursor: pointer;
                 background-color: white;
-                border: 1px solid black;
+                border: 2px solid #88BBD6;
                 border-radius: 10px;
             }
             tfoot tr {
@@ -92,8 +92,41 @@ const Container = styled.div`
             cursor: pointer;
             font-weight: bold;
             background-color: white;
-            border: 1px solid black;
+            border: 2px solid green;
             border-radius: 10px;
+        }
+    }
+
+    #totals-div {
+        padding: 15px;
+        text-align: center;
+        border-top: 3px solid #4484CE;
+
+        h1 {
+            margin: 0 0 5px 0;
+            text-align: center;
+        }
+
+        table {
+            margin: 0 auto;
+            width: 70%;
+            padding: 2px;
+            border: 1px solid black;
+            border-collapse: collapse;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            thead tr {
+                background-color: #88BBD6;
+            }
+            #tth1, #tth2, #tth3, #tth4, #tth5, #tth6 {
+                width: 16.67%;
+                padding: 2px;
+            }
+            #ttd1, #ttd2, #ttd3, #ttd4, #ttd5, #ttd6 {
+                width: 16.67%;
+                padding: 2px;
+                background-color: white;
+                font-weight: bold;
+            }
         }
     }
 `;
@@ -161,6 +194,14 @@ const Meals = () => {
         sumProtein: 0
     });
     const [sumSnacks, setSumSnacks] = useState<MealSumDataTypes>({
+        sumCalories: 0,
+        sumTotalFat: 0,
+        sumCholesterol: 0,
+        sumSodium: 0,
+        sumTotalCarbohydrate: 0,
+        sumProtein: 0
+    });
+    const [sumTotals, setSumTotals] = useState<MealSumDataTypes>({
         sumCalories: 0,
         sumTotalFat: 0,
         sumCholesterol: 0,
@@ -265,6 +306,14 @@ const Meals = () => {
                         sumTotalCarbohydrate: 0,
                         sumProtein: 0
                     };
+                    let tempSumTotals: MealSumDataTypes = {
+                        sumCalories: 0,
+                        sumTotalFat: 0,
+                        sumCholesterol: 0,
+                        sumSodium: 0,
+                        sumTotalCarbohydrate: 0,
+                        sumProtein: 0
+                    };
 
                     for (let i = 0; i < data.length; i++) {
                         switch(data[i].meal_type) {
@@ -286,21 +335,27 @@ const Meals = () => {
                                 });
                                 if (data[i].calories) {
                                     tempSumBreakfasts.sumCalories += data[i].calories;
+                                    tempSumTotals.sumCalories += data[i].calories;
                                 }
                                 if (data[i].total_fat) {
                                     tempSumBreakfasts.sumTotalFat += data[i].total_fat;
+                                    tempSumTotals.sumTotalFat += data[i].total_fat;
                                 }
                                 if (data[i].cholesterol) {
                                     tempSumBreakfasts.sumCholesterol += data[i].cholesterol;
+                                    tempSumTotals.sumCholesterol += data[i].cholesterol;
                                 }
                                 if (data[i].sodium) {
                                     tempSumBreakfasts.sumSodium += data[i].sodium;
+                                    tempSumTotals.sumSodium += data[i].sodium;
                                 }
                                 if (data[i].total_carbohydrate) {
                                     tempSumBreakfasts.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                    tempSumTotals.sumTotalCarbohydrate += data[i].total_carbohydrate;
                                 }
                                 if (data[i].protein) {
                                     tempSumBreakfasts.sumProtein += data[i].protein;
+                                    tempSumTotals.sumProtein += data[i].protein;
                                 }
                                 break;
                             case 'lunch':
@@ -321,21 +376,27 @@ const Meals = () => {
                                 });
                                 if (data[i].calories) {
                                     tempSumLunches.sumCalories += data[i].calories;
+                                    tempSumTotals.sumCalories += data[i].calories;
                                 }
                                 if (data[i].total_fat) {
                                     tempSumLunches.sumTotalFat += data[i].total_fat;
+                                    tempSumTotals.sumTotalFat += data[i].total_fat;
                                 }
                                 if (data[i].cholesterol) {
                                     tempSumLunches.sumCholesterol += data[i].cholesterol;
+                                    tempSumTotals.sumCholesterol += data[i].cholesterol;
                                 }
                                 if (data[i].sodium) {
                                     tempSumLunches.sumSodium += data[i].sodium;
+                                    tempSumTotals.sumSodium += data[i].sodium;
                                 }
                                 if (data[i].total_carbohydrate) {
                                     tempSumLunches.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                    tempSumTotals.sumTotalCarbohydrate += data[i].total_carbohydrate;
                                 }
                                 if (data[i].protein) {
                                     tempSumLunches.sumProtein += data[i].protein;
+                                    tempSumTotals.sumProtein += data[i].protein;
                                 }
                                 break;
                             case 'dinner':
@@ -356,21 +417,27 @@ const Meals = () => {
                                 });
                                 if (data[i].calories) {
                                     tempSumDinners.sumCalories += data[i].calories;
+                                    tempSumTotals.sumCalories += data[i].calories;
                                 }
                                 if (data[i].total_fat) {
                                     tempSumDinners.sumTotalFat += data[i].total_fat;
+                                    tempSumTotals.sumTotalFat += data[i].total_fat;
                                 }
                                 if (data[i].cholesterol) {
                                     tempSumDinners.sumCholesterol += data[i].cholesterol;
+                                    tempSumTotals.sumCholesterol += data[i].cholesterol;
                                 }
                                 if (data[i].sodium) {
                                     tempSumDinners.sumSodium += data[i].sodium;
+                                    tempSumTotals.sumSodium += data[i].sodium;
                                 }
                                 if (data[i].total_carbohydrate) {
                                     tempSumDinners.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                    tempSumTotals.sumTotalCarbohydrate += data[i].total_carbohydrate;
                                 }
                                 if (data[i].protein) {
                                     tempSumDinners.sumProtein += data[i].protein;
+                                    tempSumTotals.sumProtein += data[i].protein;
                                 }
                                 break;
                             case 'snack':
@@ -391,24 +458,28 @@ const Meals = () => {
                                 });
                                 if (data[i].calories) {
                                     tempSumSnacks.sumCalories += data[i].calories;
+                                    tempSumTotals.sumCalories += data[i].calories;
                                 }
                                 if (data[i].total_fat) {
                                     tempSumSnacks.sumTotalFat += data[i].total_fat;
+                                    tempSumTotals.sumTotalFat += data[i].total_fat;
                                 }
                                 if (data[i].cholesterol) {
                                     tempSumSnacks.sumCholesterol += data[i].cholesterol;
+                                    tempSumTotals.sumCholesterol += data[i].cholesterol;
                                 }
                                 if (data[i].sodium) {
                                     tempSumSnacks.sumSodium += data[i].sodium;
+                                    tempSumTotals.sumSodium += data[i].sodium;
                                 }
                                 if (data[i].total_carbohydrate) {
                                     tempSumSnacks.sumTotalCarbohydrate += data[i].total_carbohydrate;
+                                    tempSumTotals.sumTotalCarbohydrate += data[i].total_carbohydrate;
                                 }
                                 if (data[i].protein) {
                                     tempSumSnacks.sumProtein += data[i].protein;
+                                    tempSumTotals.sumProtein += data[i].protein;
                                 }
-                                break;
-                            default:
                                 break;
                         }
                     }
@@ -421,6 +492,7 @@ const Meals = () => {
                     setSumLunches(tempSumLunches);
                     setSumDinners(tempSumDinners);
                     setSumSnacks(tempSumSnacks);
+                    setSumTotals(tempSumTotals);
                 }
             }
             catch (err) {
@@ -612,12 +684,98 @@ const Meals = () => {
                     }
                 );
                 if (response.ok) {
-                    console.log(response);
-                } else {
+                    const newItem = await response.json();
+                    const modifiedNewItem: MealDataTypes = {
+                        id: newItem.id,
+                        userId: newItem.user_id,
+                        mealType: newItem.meal_type,
+                        name: newItem.name,
+                        calories: newItem.calories,
+                        totalFat: newItem.total_fat,
+                        cholesterol: newItem.cholesterol,
+                        sodium: newItem.sodium,
+                        totalCarbohydrate: newItem.total_carbohydrate,
+                        protein: newItem.protein,
+                        consumedAt: newItem.consumed_at,
+                        createdAt: newItem.created_at,
+                        updatedAt: newItem.updated_at
+                    };
+
+                    switch(selectedMeal) {
+                        case 'Breakfast':
+                            setBreakfasts((prevBreakfasts) => [...prevBreakfasts, modifiedNewItem]);
+
+                            let tempSumBreakfasts: MealSumDataTypes = {
+                                sumCalories: sumBreakfasts.sumCalories + (modifiedNewItem?.calories || 0),
+                                sumTotalFat: sumBreakfasts.sumTotalFat + (modifiedNewItem?.totalFat || 0),
+                                sumCholesterol: sumBreakfasts.sumCholesterol + (modifiedNewItem?.cholesterol || 0),
+                                sumSodium: sumBreakfasts.sumSodium + (modifiedNewItem?.sodium || 0),
+                                sumTotalCarbohydrate: sumBreakfasts.sumTotalCarbohydrate + (modifiedNewItem?.totalCarbohydrate || 0),
+                                sumProtein: sumBreakfasts.sumProtein + (modifiedNewItem?.protein || 0)
+                            }
+                            setSumBreakfasts(tempSumBreakfasts);
+
+                            break;
+                        case 'Lunch':
+                            setLunches((prevLunches) => [...prevLunches, modifiedNewItem]);
+
+                            let tempSumLunches: MealSumDataTypes = {
+                                sumCalories: sumLunches.sumCalories + (modifiedNewItem?.calories || 0),
+                                sumTotalFat: sumLunches.sumTotalFat + (modifiedNewItem?.totalFat || 0),
+                                sumCholesterol: sumLunches.sumCholesterol + (modifiedNewItem?.cholesterol || 0),
+                                sumSodium: sumLunches.sumSodium + (modifiedNewItem?.sodium || 0),
+                                sumTotalCarbohydrate: sumLunches.sumTotalCarbohydrate + (modifiedNewItem?.totalCarbohydrate || 0),
+                                sumProtein: sumLunches.sumProtein + (modifiedNewItem?.protein || 0)
+                            }
+                            setSumLunches(tempSumLunches);
+
+                            break;
+                        case 'Dinner':
+                            setDinners((prevDinners) => [...prevDinners, modifiedNewItem]);
+
+                            let tempSumDinners: MealSumDataTypes = {
+                                sumCalories: sumDinners.sumCalories + (modifiedNewItem?.calories || 0),
+                                sumTotalFat: sumDinners.sumTotalFat + (modifiedNewItem?.totalFat || 0),
+                                sumCholesterol: sumDinners.sumCholesterol + (modifiedNewItem?.cholesterol || 0),
+                                sumSodium: sumDinners.sumSodium + (modifiedNewItem?.sodium || 0),
+                                sumTotalCarbohydrate: sumDinners.sumTotalCarbohydrate + (modifiedNewItem?.totalCarbohydrate || 0),
+                                sumProtein: sumDinners.sumProtein + (modifiedNewItem?.protein || 0)
+                            }
+                            setSumDinners(tempSumDinners);
+
+                            break;
+                        case 'Snack':
+                            setSnacks((prevSnacks) => [...prevSnacks, modifiedNewItem]);
+
+                            let tempSumSnacks: MealSumDataTypes = {
+                                sumCalories: sumSnacks.sumCalories + (modifiedNewItem?.calories || 0),
+                                sumTotalFat: sumSnacks.sumTotalFat + (modifiedNewItem?.totalFat || 0),
+                                sumCholesterol: sumSnacks.sumCholesterol + (modifiedNewItem?.cholesterol || 0),
+                                sumSodium: sumSnacks.sumSodium + (modifiedNewItem?.sodium || 0),
+                                sumTotalCarbohydrate: sumSnacks.sumTotalCarbohydrate + (modifiedNewItem?.totalCarbohydrate || 0),
+                                sumProtein: sumSnacks.sumProtein + (modifiedNewItem?.protein || 0)
+                            }
+                            setSumSnacks(tempSumSnacks);
+
+                            break;
+                    }
+
+                    let tempSumTotals: MealSumDataTypes = {
+                        sumCalories: sumBreakfasts.sumCalories + sumLunches.sumCalories + sumDinners.sumCalories + sumSnacks.sumCalories,
+                        sumTotalFat: sumBreakfasts.sumTotalFat + sumLunches.sumTotalFat + sumLunches.sumTotalFat + sumSnacks.sumTotalFat,
+                        sumCholesterol: sumBreakfasts.sumCholesterol + sumLunches.sumCholesterol + sumDinners.sumCholesterol + sumSnacks.sumCholesterol,
+                        sumSodium: sumBreakfasts.sumSodium + sumLunches.sumSodium + sumDinners.sumSodium + sumSnacks.sumSodium,
+                        sumTotalCarbohydrate: sumBreakfasts.sumTotalCarbohydrate + sumLunches.sumTotalCarbohydrate + sumDinners.sumTotalCarbohydrate + sumSnacks.sumTotalCarbohydrate,
+                        sumProtein: sumBreakfasts.sumProtein + sumLunches.sumProtein + sumDinners.sumProtein + sumSnacks.sumProtein
+                    }
+                    setSumTotals(tempSumTotals);
+                } 
+                else {
                     const error = await response.json();
                     console.log(error);
                 }
-            } catch (err) {
+            } 
+            catch (err) {
                 console.log(`Error: ${err}`);
                 //toast.error('An error occurred, please try again.');
             }
@@ -629,8 +787,9 @@ const Meals = () => {
             <div id='date-div'>
                 <h1>{displayDate}</h1>
             </div>
+
             <div className='meals-div'>
-                <h1>Breakfasts</h1>
+                <h1>Breakfast</h1>
                 {
                     breakfasts.length > 0 && (
                         <table>
@@ -652,12 +811,12 @@ const Meals = () => {
                                 breakfasts.map((breakfast) => (
                                     <tr key={breakfast.id}>
                                         <td className='td1'>{breakfast.name}</td>
-                                        <td className='td2'>{breakfast.calories === null ? 'N/A' : breakfast.calories}</td>
-                                        <td className='td3'>{breakfast.totalFat === null ? 'N/A' : breakfast.totalFat}</td>
-                                        <td className='td4'>{breakfast.cholesterol === null ? 'N/A' : breakfast.cholesterol}</td>
-                                        <td className='td5'>{breakfast.sodium === null ? 'N/A' : breakfast.sodium}</td>
-                                        <td className='td6'>{breakfast.totalCarbohydrate === null ? 'N/A' : breakfast.totalCarbohydrate}</td>
-                                        <td className='td7'>{breakfast.protein === null ? 'N/A' : breakfast.protein}</td>
+                                        <td className='td2'>{breakfast.calories === null ? '0' : breakfast.calories}</td>
+                                        <td className='td3'>{breakfast.totalFat === null ? '0' : breakfast.totalFat}</td>
+                                        <td className='td4'>{breakfast.cholesterol === null ? '0' : breakfast.cholesterol}</td>
+                                        <td className='td5'>{breakfast.sodium === null ? '0' : breakfast.sodium}</td>
+                                        <td className='td6'>{breakfast.totalCarbohydrate === null ? '0' : breakfast.totalCarbohydrate}</td>
+                                        <td className='td7'>{breakfast.protein === null ? '0' : breakfast.protein}</td>
                                         <td className='td8'>
                                         {
                                             new Date(breakfast.consumedAt).toLocaleString('en-US', {
@@ -677,11 +836,11 @@ const Meals = () => {
                                 <tr>
                                     <th className='tf1' scope='row'>Totals</th>
                                     <td className='tf2'>{sumBreakfasts.sumCalories}</td>
-                                    <td className='tf3'>{sumBreakfasts.sumTotalFat}</td>
-                                    <td className='tf4'>{sumBreakfasts.sumCholesterol}</td>
-                                    <td className='tf5'>{sumBreakfasts.sumSodium}</td>
-                                    <td className='tf6'>{sumBreakfasts.sumTotalCarbohydrate}</td>
-                                    <td className='tf7'>{sumBreakfasts.sumProtein}</td>
+                                    <td className='tf3'>{sumBreakfasts.sumTotalFat}g</td>
+                                    <td className='tf4'>{sumBreakfasts.sumCholesterol}mg</td>
+                                    <td className='tf5'>{sumBreakfasts.sumSodium}mg</td>
+                                    <td className='tf6'>{sumBreakfasts.sumTotalCarbohydrate}g</td>
+                                    <td className='tf7'>{sumBreakfasts.sumProtein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
                                 </tr>
@@ -695,9 +854,11 @@ const Meals = () => {
                     Add Breakfast
                 </button>
             </div>
+
             <br />
+
             <div className='meals-div'>
-                <h1>Lunches</h1>
+                <h1>Lunch</h1>
                 {
                     lunches.length > 0 && (
                         <table>
@@ -719,12 +880,12 @@ const Meals = () => {
                                 lunches.map((lunch) => (
                                     <tr key={lunch.id}>
                                         <td className='td1'>{lunch.name}</td>
-                                        <td className='td2'>{lunch.calories === null ? 'N/A' : lunch.calories}</td>
-                                        <td className='td3'>{lunch.totalFat === null ? 'N/A' : lunch.totalFat}</td>
-                                        <td className='td4'>{lunch.cholesterol === null ? 'N/A' : lunch.cholesterol}</td>
-                                        <td className='td5'>{lunch.sodium === null ? 'N/A' : lunch.sodium}</td>
-                                        <td className='td6'>{lunch.totalCarbohydrate === null ? 'N/A' : lunch.totalCarbohydrate}</td>
-                                        <td className='td7'>{lunch.protein === null ? 'N/A' : lunch.protein}</td>
+                                        <td className='td2'>{lunch.calories === null ? '0' : lunch.calories}</td>
+                                        <td className='td3'>{lunch.totalFat === null ? '0' : lunch.totalFat}</td>
+                                        <td className='td4'>{lunch.cholesterol === null ? '0' : lunch.cholesterol}</td>
+                                        <td className='td5'>{lunch.sodium === null ? '0' : lunch.sodium}</td>
+                                        <td className='td6'>{lunch.totalCarbohydrate === null ? '0' : lunch.totalCarbohydrate}</td>
+                                        <td className='td7'>{lunch.protein === null ? '0' : lunch.protein}</td>
                                         <td className='td8'>
                                         {
                                             new Date(lunch.consumedAt).toLocaleString('en-US', {
@@ -744,11 +905,11 @@ const Meals = () => {
                                 <tr>
                                     <th className='tf1' scope='row'>Totals</th>
                                     <td className='tf2'>{sumLunches.sumCalories}</td>
-                                    <td className='tf3'>{sumLunches.sumTotalFat}</td>
-                                    <td className='tf4'>{sumLunches.sumCholesterol}</td>
-                                    <td className='tf5'>{sumLunches.sumSodium}</td>
-                                    <td className='tf6'>{sumLunches.sumTotalCarbohydrate}</td>
-                                    <td className='tf7'>{sumLunches.sumProtein}</td>
+                                    <td className='tf3'>{sumLunches.sumTotalFat}g</td>
+                                    <td className='tf4'>{sumLunches.sumCholesterol}mg</td>
+                                    <td className='tf5'>{sumLunches.sumSodium}mg</td>
+                                    <td className='tf6'>{sumLunches.sumTotalCarbohydrate}g</td>
+                                    <td className='tf7'>{sumLunches.sumProtein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
                                 </tr>
@@ -762,9 +923,11 @@ const Meals = () => {
                     Add Lunch
                 </button>
             </div>
+
             <br />
+
             <div className='meals-div'>
-                <h1>Dinners</h1>
+                <h1>Dinner</h1>
                 {
                     dinners.length > 0 && (
                         <table>
@@ -786,12 +949,12 @@ const Meals = () => {
                                 dinners.map((dinner) => (
                                     <tr key={dinner.id}>
                                         <td className='td1'>{dinner.name}</td>
-                                        <td className='td2'>{dinner.calories === null ? 'N/A' : dinner.calories}</td>
-                                        <td className='td3'>{dinner.totalFat === null ? 'N/A' : dinner.totalFat}</td>
-                                        <td className='td4'>{dinner.cholesterol === null ? 'N/A' : dinner.cholesterol}</td>
-                                        <td className='td5'>{dinner.sodium === null ? 'N/A' : dinner.sodium}</td>
-                                        <td className='td6'>{dinner.totalCarbohydrate === null ? 'N/A' : dinner.totalCarbohydrate}</td>
-                                        <td className='td7'>{dinner.protein === null ? 'N/A' : dinner.protein}</td>
+                                        <td className='td2'>{dinner.calories === null ? '0' : dinner.calories}</td>
+                                        <td className='td3'>{dinner.totalFat === null ? '0' : dinner.totalFat}</td>
+                                        <td className='td4'>{dinner.cholesterol === null ? '0' : dinner.cholesterol}</td>
+                                        <td className='td5'>{dinner.sodium === null ? '0' : dinner.sodium}</td>
+                                        <td className='td6'>{dinner.totalCarbohydrate === null ? '0' : dinner.totalCarbohydrate}</td>
+                                        <td className='td7'>{dinner.protein === null ? '0' : dinner.protein}</td>
                                         <td className='td8'>
                                         {
                                             new Date(dinner.consumedAt).toLocaleString('en-US', {
@@ -813,9 +976,9 @@ const Meals = () => {
                                     <td className='tf2'>{sumDinners.sumCalories}</td>
                                     <td className='tf3'>{sumDinners.sumTotalFat}</td>
                                     <td className='tf4'>{sumDinners.sumCholesterol}</td>
-                                    <td className='tf5'>{sumDinners.sumSodium}</td>
-                                    <td className='tf6'>{sumDinners.sumTotalCarbohydrate}</td>
-                                    <td className='tf7'>{sumDinners.sumProtein}</td>
+                                    <td className='tf5'>{sumDinners.sumSodium}mg</td>
+                                    <td className='tf6'>{sumDinners.sumTotalCarbohydrate}g</td>
+                                    <td className='tf7'>{sumDinners.sumProtein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
                                 </tr>
@@ -829,9 +992,11 @@ const Meals = () => {
                     Add Dinner
                 </button>
             </div>
+
             <br />
+
             <div className='meals-div'>
-                <h1>Snacks</h1>
+                <h1>Snack</h1>
                 {
                     snacks.length > 0 && (
                         <table>
@@ -853,12 +1018,12 @@ const Meals = () => {
                                 snacks.map((snack) => (
                                     <tr key={snack.id}>
                                         <td className='td1'>{snack.name}</td>
-                                        <td className='td2'>{snack.calories === null ? 'N/A' : snack.calories}</td>
-                                        <td className='td3'>{snack.totalFat === null ? 'N/A' : snack.totalFat}</td>
-                                        <td className='td4'>{snack.cholesterol === null ? 'N/A' : snack.cholesterol}</td>
-                                        <td className='td5'>{snack.sodium === null ? 'N/A' : snack.sodium}</td>
-                                        <td className='td6'>{snack.totalCarbohydrate === null ? 'N/A' : snack.totalCarbohydrate}</td>
-                                        <td className='td7'>{snack.protein === null ? 'N/A' : snack.protein}</td>
+                                        <td className='td2'>{snack.calories === null ? '0' : snack.calories}</td>
+                                        <td className='td3'>{snack.totalFat === null ? '0' : snack.totalFat}</td>
+                                        <td className='td4'>{snack.cholesterol === null ? '0' : snack.cholesterol}</td>
+                                        <td className='td5'>{snack.sodium === null ? '0' : snack.sodium}</td>
+                                        <td className='td6'>{snack.totalCarbohydrate === null ? '0' : snack.totalCarbohydrate}</td>
+                                        <td className='td7'>{snack.protein === null ? '0' : snack.protein}</td>
                                         <td className='td8'>
                                         {
                                             new Date(snack.consumedAt).toLocaleString('en-US', {
@@ -880,9 +1045,9 @@ const Meals = () => {
                                     <td className='tf2'>{sumSnacks.sumCalories}</td>
                                     <td className='tf3'>{sumSnacks.sumTotalFat}</td>
                                     <td className='tf4'>{sumSnacks.sumCholesterol}</td>
-                                    <td className='tf5'>{sumSnacks.sumSodium}</td>
-                                    <td className='tf6'>{sumSnacks.sumTotalCarbohydrate}</td>
-                                    <td className='tf7'>{sumSnacks.sumProtein}</td>
+                                    <td className='tf5'>{sumSnacks.sumSodium}mg</td>
+                                    <td className='tf6'>{sumSnacks.sumTotalCarbohydrate}g</td>
+                                    <td className='tf7'>{sumSnacks.sumProtein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
                                 </tr>
@@ -899,19 +1064,47 @@ const Meals = () => {
 
             <br/>
 
+            <div id='totals-div'>
+                <h1>Totals</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th id='tth1' scope='col'>Calories</th>
+                            <th id='tth2' scope='col'>Total Fat</th>
+                            <th id='tth3' scope='col'>Cholesterol</th>
+                            <th id='tth4' scope='col'>Sodium</th>
+                            <th id='tth5' scope='col'>Total Carbohydrate</th>
+                            <th id='tth6' scope='col'>Protein</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id='ttd1'>{sumTotals.sumCalories === null ? '0' : sumTotals.sumCalories}</td>
+                            <td id='ttd2'>{sumTotals.sumTotalFat === null ? '0' : sumTotals.sumTotalFat}</td>
+                            <td id='ttd3'>{sumTotals.sumCholesterol === null ? '0' : sumTotals.sumCholesterol}</td>
+                            <td id='ttd4'>{sumTotals.sumSodium === null ? '0' : sumTotals.sumSodium}mg</td>
+                            <td id='ttd5'>{sumTotals.sumTotalCarbohydrate === null ? '0' : sumTotals.sumTotalCarbohydrate}g</td>
+                            <td id='ttd6'>{sumTotals.sumProtein === null ? '0' : sumTotals.sumProtein}g</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <br />
+
             <CustomModal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 contentLabel='Modal'
             >
                 <div id='content-modal-div'>
-                    <StyledFaRectangleXmark onClick={closeModal}/>
+                    <button id='modal-exit-btn' onClick={closeModal}><StyledFaXmark /></button>
                     <h1>{selectedMeal}</h1>
 
                     <form onSubmit={submitForm}>
                         <div>
                             <p>{formDataErrors.nameError}</p>
-                            <label htmlFor='meal-name'>Name: <StyledFaStarOfLife /></label>
+                            <label htmlFor='meal-name'><b>Name:</b> <StyledFaStarOfLife /></label>
                             <input
                                 id='meal-name'
                                 type='text'
@@ -928,7 +1121,7 @@ const Meals = () => {
 
                         <div>
                             <p>{formDataErrors.caloriesError}</p>
-                            <label htmlFor='meal-calories'>Calories:</label>
+                            <label htmlFor='meal-calories'><b>Calories:</b></label>
                             <input
                                 id='meal-calories'
                                 type='number'
@@ -943,7 +1136,7 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label htmlFor='meal-total-fat' title='grams'>Total Fat:</label>
+                            <label htmlFor='meal-total-fat'><b>Total Fat:</b> (grams)</label>
                             <input
                                 id='meal-total-fat'
                                 type='number'
@@ -958,7 +1151,7 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label htmlFor='meal-cholesterol' title='milligrams'>Cholesterol:</label>
+                            <label htmlFor='meal-cholesterol'><b>Cholesterol:</b> (milligrams)</label>
                             <input
                                 id='meal-cholesterol'
                                 type='number'
@@ -973,7 +1166,7 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label htmlFor='meal-sodium' title='milligrams'>Sodium:</label>
+                            <label htmlFor='meal-sodium'><b>Sodium:</b> (milligrams)</label>
                             <input
                                 id='meal-sodium'
                                 type='number'
@@ -988,7 +1181,7 @@ const Meals = () => {
                         </div>
                         
                         <div>
-                            <label htmlFor='meal-total-carbohydrate' title='grams'>Total Carbohydrate:</label>
+                            <label htmlFor='meal-total-carbohydrate'><b>Total Carbohydrate:</b> (grams)</label>
                             <input
                                 id='meal-total-carbohydrate'
                                 type='number'
@@ -1003,7 +1196,7 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label htmlFor='meal-protein' title='grams'>Protein:</label>
+                            <label htmlFor='meal-protein'><b>Protein:</b> (grams)</label>
                             <input
                                 id='meal-protein'
                                 type='number'
@@ -1019,7 +1212,7 @@ const Meals = () => {
 
                         <div>
                             <p>{formDataErrors.consumedAtError}</p>
-                            <label htmlFor='meal-timestamp'>Consumed At: <StyledFaStarOfLife /></label>
+                            <label htmlFor='meal-timestamp'><b>Consumed At:</b> <StyledFaStarOfLife /></label>
                             <input
                                 id='meal-timestamp'
                                 type='datetime-local'
@@ -1061,6 +1254,17 @@ const CustomModal = styled(Modal)`
         text-align: center;
         border: 1px solid black;
 
+        #modal-exit-btn {
+            float: right;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
         h1 {
             margin: 5px 0 5px 0;
             text-align: center;
@@ -1080,7 +1284,6 @@ const CustomModal = styled(Modal)`
                 }
                 label {
                     text-align: left;
-                    font-weight: bold;
                 }
                 input {
                     border: 1px solid black;
@@ -1094,17 +1297,16 @@ const CustomModal = styled(Modal)`
                 font-weight: bold;
                 border: 1px solid black;
                 border-radius: 10px;
-                background-color: white;
+                color: white;
+                background-color: black;
                 cursor: pointer;
             }
         }
     }
 `;
-const StyledFaRectangleXmark = styled(FaRectangleXmark)`
-    color: red;
+const StyledFaXmark = styled(FaXmark)`
+    color: white;
     font-size: 20px;
-    float: right;
-    cursor: pointer;
 `;
 const StyledFaStarOfLife = styled(FaStarOfLife)`
     color: red;
