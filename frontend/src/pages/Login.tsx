@@ -57,9 +57,9 @@ const LoginForm = styled.form`
 `;
 
 const Login = () => {
-    let navigate = useNavigate();
+    const { consumer, setConsumer } = useContext(AuthContext);
 
-    const { user, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     interface FormDataTypes {
         email: string;
@@ -71,10 +71,10 @@ const Login = () => {
     });
 
     useEffect(() => {
-        if (user.authenticated) {
+        if (consumer.authenticated) {
             navigate('/');
         }
-    }, [navigate, user.authenticated]);
+    }, [consumer.authenticated, navigate]);
 
     const validateFormData = () => {
         let errorCount: number = 0;
@@ -96,7 +96,7 @@ const Login = () => {
         if (validateFormData()) {
             try {
                 const response = await fetch(
-                    'http://localhost:5000/api/v1/user/login',
+                    'http://localhost:5000/api/v1/consumer/login',
                     {
                         method: 'POST',
                         credentials: 'include',
@@ -108,22 +108,19 @@ const Login = () => {
                 );    
     
                 if (response.ok) {
-                    const user = await response.json();
-                    setUser({
-                        id: user.id,
-                        firstName: user.first_name,
-                        email: user.email,
-                        createdAt: user.created_at,
-                        updatedAt: user.updated_at,
-                        lastSignedIn: user.last_signed_in,
+                    const loggedInConsumer = await response.json();
+                    setConsumer({
+                        ...loggedInConsumer,
                         authenticated: true
                     });
                     navigate('/');
-                } else {
+                } 
+                else {
                     const error = await response.json();
                     toast.error(error.err);
                 }
-            } catch (err) {
+            }
+            catch (err) {
                 console.log(`Error: ${err}`);
                 toast.error('An error occurred, please try again.');
             }

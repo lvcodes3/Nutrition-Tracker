@@ -1,9 +1,6 @@
 // dependencies //
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-// context //
-import { AuthContext } from '../context/AuthContext';
 
 const UnauthHomeContainer = styled.div`
 width: 100%;
@@ -12,8 +9,6 @@ background-color: #D9D9D9;
 `;
 
 const UnauthHome = () => {
-    const { user, setUser } = useContext(AuthContext);
-
     const navigate = useNavigate();
 
     return (

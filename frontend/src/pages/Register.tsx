@@ -58,9 +58,9 @@ const RegisterForm = styled.form`
 `;
 
 const Register = () => {
-    let navigate = useNavigate();
+    const { consumer, setConsumer } = useContext(AuthContext);
 
-    const { user, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     interface FormDataTypes {
         firstName: string;
@@ -76,10 +76,10 @@ const Register = () => {
     });
 
     useEffect(() => {
-        if (user.authenticated) {
+        if (consumer.authenticated) {
             navigate('/');
         }
-    }, [navigate, user.authenticated]);
+    }, [consumer.authenticated, navigate]);
 
     const validateFormData = () => {
         setFormData({
@@ -116,7 +116,7 @@ const Register = () => {
         if (validateFormData()) {
             try {
                 const response = await fetch(
-                    'http://localhost:5000/api/v1/user/register',
+                    'http://localhost:5000/api/v1/consumer/register',
                     {
                         method: 'POST',
                         headers: {
@@ -129,11 +129,13 @@ const Register = () => {
                 if (response.ok) {
                     toast.success('You have successfully registered, please login.');
                     navigate('/login');
-                } else {
+                } 
+                else {
                     const error = await response.json();
                     toast.error(error.err);
                 }
-            } catch (err) {
+            }
+            catch (err) {
                 console.log(`Error: ${err}`);
                 toast.error('An error occurred, please try again.');
             }

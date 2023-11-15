@@ -6,7 +6,7 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaPerson, FaPowerOff } from 'react-icons/fa6';
+import { FaPowerOff } from 'react-icons/fa6';
 
 const AuthNavbarContainer = styled.nav`
     width: 100%;
@@ -95,14 +95,14 @@ const UnauthNavbarContainer = styled.nav`
 `;
 
 const Navbar = () => {
-    let navigate = useNavigate();
-    
-    const { user, setUser } = useContext(AuthContext);
+    const { consumer, setConsumer } = useContext(AuthContext);
+
+    const navigate = useNavigate();
 
     const logout = async () => {
         try {
             const response = await fetch(
-                'http://localhost:5000/api/v1/user/logout',
+                'http://localhost:5000/api/v1/consumer/logout',
                 {
                     method: 'POST',
                     credentials: 'include',
@@ -115,7 +115,7 @@ const Navbar = () => {
             if (response.ok) {
                 const msg = await response.json();
                 toast.success(msg.msg);
-                setUser({
+                setConsumer({
                     id: null,
                     firstName: null,
                     email: null,
@@ -125,11 +125,13 @@ const Navbar = () => {
                     authenticated: false
                 });
                 navigate('/');
-            } else {
+            } 
+            else {
                 const error = await response.json();
                 toast.error(error.err);
             }
-        } catch (err) {
+        } 
+        catch (err) {
             console.log(`Error: ${err}`);
             toast.error('Error logging out.');
         }
@@ -138,13 +140,13 @@ const Navbar = () => {
     return (
         <>
         {
-            user.authenticated ? (
+            consumer.authenticated ? (
                 <AuthNavbarContainer>
                     <div id='header-div'>
                         <Link id='header-link' to='/'>Nutrition Tracker</Link>
                     </div>
                     <div id='profile-div'>
-                        <Link id='profile-link' to='/profile'>{user.firstName}</Link>
+                        <Link id='profile-link' to='/profile'>{consumer.firstName}</Link>
                         <button onClick={logout}>
                             <FaPowerOff id='styled-fa-power-off' />
                         </button>
@@ -165,6 +167,6 @@ const Navbar = () => {
             )
         }
         </>
-    )
+    );
 }
 export default Navbar;

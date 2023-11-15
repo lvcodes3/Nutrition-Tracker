@@ -11,26 +11,27 @@ const protect = (async (req, res, next) => {
             // verify the jwt //
             const decoded = jwt.verify(jsonWebToken, process.env.JWTSECRET);
 
-            // get the user //
+            // get the consumer //
             let result = await db.query(
-                `SELECT id, first_name, email, created_at, updated_at, last_signed_in
-                 FROM users
+                `SELECT id, firstName, email, createdAt, updatedAt, lastSignedIn FROM consumer
                  WHERE id=$1;`,
                 [decoded.id]
             );
             if (result.rowCount === 0) {
-                return res.status(400).json({ err: 'User does not exist.' });
+                return res.status(400).json({ err: 'Consumer does not exist.' });
             }
 
-            // create req.user to send to the next route //
-            req.user = result.rows[0];
+            // create req.consumer to send to the next route //
+            req.consumer = result.rows[0];
 
             // go to next route //
             next();   
-        } catch (err) {
+        } 
+        catch (err) {
             return res.status(401).json({ err: 'Not authorized, invalid JWT.' });          
         }
-    } else {
+    } 
+    else {
         return res.status(401).json({ err: 'Not authorized, no JWT.' });
     }
 });

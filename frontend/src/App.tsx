@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // context //
-import { UserType, initialUser, AuthContext } from './context/AuthContext';
+import { ConsumerType, initialConsumer, AuthContext } from './context/AuthContext';
 // pages //
 import Home from './pages/Home';
 import Meals from './pages/Meals';
@@ -16,13 +16,13 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 function App() {
-  const [user, setUser] = useState<UserType>(initialUser);
+  const [consumer, setConsumer] = useState<ConsumerType>(initialConsumer);
 
   useEffect(() => {
     const authenticateUser = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5000/api/v1/user/auth',
+          'http://localhost:5000/api/v1/consumer/auth',
           {
             method: 'GET',
             credentials: 'include',
@@ -31,21 +31,16 @@ function App() {
             }
           }
         );
-        console.log(response);
 
         if (response.ok) {
-          const user = await response.json();
-          setUser({
-              id: user.id,
-              firstName: user.first_name,
-              email: user.email,
-              createdAt: user.created_at,
-              updatedAt: user.updated_at,
-              lastSignedIn: user.last_signed_in,
-              authenticated: true
+          const authenticatedConsumer = await response.json();
+          setConsumer({
+            ...authenticatedConsumer,
+            authenticated: true
           });
         }
-      } catch (err) {
+      } 
+      catch (err) {
         console.log(`Fetch error: ${err}`);
       }
     }
@@ -54,7 +49,7 @@ function App() {
 
   return (
     <>
-      <AuthContext.Provider value={{ user, setUser }}>
+      <AuthContext.Provider value={{ consumer, setConsumer }}>
         <Router>
           <ToastContainer />
           <Navbar />

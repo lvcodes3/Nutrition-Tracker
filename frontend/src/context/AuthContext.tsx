@@ -1,7 +1,7 @@
 // dependencies //
 import { createContext, Dispatch, SetStateAction } from 'react';
 
-export type UserType = {
+export type ConsumerType = {
     id: null | number;
     firstName: null | string;
     email: null | string;
@@ -11,7 +11,7 @@ export type UserType = {
     authenticated: boolean;
 };
 
-export const initialUser: UserType = {
+export const initialConsumer: ConsumerType = {
     id: null,
     firstName: null,
     email: null,
@@ -22,13 +22,13 @@ export const initialUser: UserType = {
 };
 
 interface AuthContextType {
-    user: UserType;
-    setUser: Dispatch<SetStateAction<UserType>>;
+    consumer: ConsumerType;
+    setConsumer: Dispatch<SetStateAction<ConsumerType>>;
 };
 
 const initialAuthState: AuthContextType = {
-    user: initialUser,
-    setUser: () => {}
+    consumer: initialConsumer,
+    setConsumer: () => {}
 };
 
 export const AuthContext = createContext<AuthContextType>(initialAuthState);

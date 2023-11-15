@@ -50,14 +50,14 @@ const AuthHomeContainer = styled.div`
 `;
 
 const AuthHome = () => {
-    const {user, setUser} = useContext(AuthContext);
+    const {consumer, setConsumer} = useContext(AuthContext);
 
     const navigate = useNavigate();
 
     return (
         <AuthHomeContainer>
             <div id='user-header-div'>
-                <h1>Welcome back, {user.firstName}!</h1>
+                <h1>Welcome back, {consumer.firstName}!</h1>
             </div>
             <div id='banner-div'>
                 <img src={FoodBanner} alt='Food Banner' />

@@ -16,6 +16,6 @@ const Footer = () => {
         <FooterContainer>
             <p>Copyright © 2023 Luis Valencia. All rights reserved.</p>
         </FooterContainer>
-    )
+    );
 }
 export default Footer;

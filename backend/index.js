@@ -28,8 +28,8 @@ const morgan = require('morgan');
 app.use(morgan('tiny'));
   
 // routes //
-const userRoutes = require('./routes/userRoutes.js');
-app.use('/api/v1/user', userRoutes);
+const consumerRoutes = require('./routes/consumerRoutes.js');
+app.use('/api/v1/consumer', consumerRoutes);
 
 const nutritionRoutes = require('./routes/nutritionRoutes.js');
 app.use('/api/v1/nutrition', nutritionRoutes);

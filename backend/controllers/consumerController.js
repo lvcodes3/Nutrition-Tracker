@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const generateJWT = require('../utils/generateJWT.js');
 const { isEmpty } = require('../utils/helper.js');
 
-const registerUser = (async (req, res) => {
+const registerConsumer = (async (req, res) => {
     try {
         const { firstName, email, password } = req.body;
 
@@ -24,7 +24,7 @@ const registerUser = (async (req, res) => {
 
         // ensure email is unique //
         let result = await db.query(
-            `SELECT email FROM users 
+            `SELECT email FROM consumer
              WHERE email=$1;`,
             [email]
         );
@@ -40,13 +40,13 @@ const registerUser = (async (req, res) => {
 
         // register user //
         result = await db.query(
-            `INSERT INTO users (first_name, email, password)
+            `INSERT INTO consumer (firstName, email, password)
              VALUES ($1, $2, $3)
              RETURNING id;`,
             [firstName, email, hashedPassword]
         );
         if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error registering user.' });
+            return res.status(400).json({ err: 'Error registering consumer.' });
         }
 
         return res.status(201).json({ msg: 'Registration successful.' });
@@ -57,13 +57,13 @@ const registerUser = (async (req, res) => {
     }
 });
 
-const loginUser = (async (req, res) => {
+const loginConsumer = (async (req, res) => {
     try {
         const { email, password } = req.body;
 
         // check if email exists //
         let result = await db.query(
-            `SELECT id, password FROM users
+            `SELECT id, password FROM consumer
              WHERE email=$1;`,
             [email]
         );
@@ -72,54 +72,56 @@ const loginUser = (async (req, res) => {
         }
 
         // check if password is correct //
-        let user = result.rows[0];
-        const isValidPassword = await bcrypt.compare(password, user.password);
+        let consumer = result.rows[0];
+        const isValidPassword = await bcrypt.compare(password, consumer.password);
         if (!isValidPassword) {
             return res.status(401).json({ err: 'Invalid email or password.' });
         }
 
-        // update user //
+        // update consumer //
         result = await db.query(
-            `UPDATE users
-             SET updated_at=CURRENT_TIMESTAMP, last_signed_in=CURRENT_TIMESTAMP
+            `UPDATE consumer
+             SET updatedAt=CURRENT_TIMESTAMP, lastSignedIn=CURRENT_TIMESTAMP
              WHERE id=$1
-             RETURNING id, first_name, email, created_at, updated_at, last_signed_in;`,
-            [user.id]
+             RETURNING id, firstName, email, createdAt, updatedAt, lastSignedIn;`,
+            [consumer.id]
         );
         if (result.rowCount === 0) {
-            res.status(400).json({ err: 'Error logging in user.' });
+            res.status(400).json({ err: 'Error logging in consumer.' });
         }
 
-        // generate JWT & return user data //
-        user = result.rows[0];
-        generateJWT(res, user.id);
-        res.status(200).json(user);
-    } catch (err) {
+        // generate JWT & return consumer data //
+        consumer = result.rows[0];
+        generateJWT(res, consumer.id);
+        res.status(200).json(consumer);
+    } 
+    catch (err) {
         console.log(`Login error: ${err}`);
         return res.status(500).json({ err: 'Login error.' });
     }
 });
 
-const logoutUser = (req, res) => {
+const logoutConsumer = (req, res) => {
     try {
         res.cookie('jwt', '', {
             httpOnly: true,
             expires: new Date(0)
         });
         res.status(200).json({ msg: 'Logout successful.' });
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(`Logout error: ${err}`);
         return res.status(500).json({ err: 'Logout error.' });
     }
 };
 
-const authUser = (async (req, res) => {
+const authConsumer = (async (req, res) => {
     return res.status(200).json(req.user);
 });
 
 module.exports = {
-    registerUser,
-    loginUser,
-    logoutUser,
-    authUser
+    registerConsumer,
+    loginConsumer,
+    logoutConsumer,
+    authConsumer
 };
