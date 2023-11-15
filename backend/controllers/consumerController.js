@@ -40,7 +40,7 @@ const registerConsumer = (async (req, res) => {
 
         // register user //
         result = await db.query(
-            `INSERT INTO consumer (firstName, email, password)
+            `INSERT INTO consumer ("firstName", email, password)
              VALUES ($1, $2, $3)
              RETURNING id;`,
             [firstName, email, hashedPassword]
@@ -81,9 +81,9 @@ const loginConsumer = (async (req, res) => {
         // update consumer //
         result = await db.query(
             `UPDATE consumer
-             SET updatedAt=CURRENT_TIMESTAMP, lastSignedIn=CURRENT_TIMESTAMP
+             SET "updatedAt"=CURRENT_TIMESTAMP, "lastSignedIn"=CURRENT_TIMESTAMP
              WHERE id=$1
-             RETURNING id, firstName, email, createdAt, updatedAt, lastSignedIn;`,
+             RETURNING id, "firstName", email, "createdAt", "updatedAt", "lastSignedIn";`,
             [consumer.id]
         );
         if (result.rowCount === 0) {
@@ -116,7 +116,7 @@ const logoutConsumer = (req, res) => {
 };
 
 const authConsumer = (async (req, res) => {
-    return res.status(200).json(req.user);
+    return res.status(200).json(req.consumer);
 });
 
 module.exports = {

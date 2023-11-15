@@ -13,7 +13,7 @@ Modal.setAppElement('#root');
 
 const Container = styled.div`
     width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     background-color: #D9D9D9;
@@ -48,20 +48,20 @@ const Container = styled.div`
             }
             .th1 {
                 width: 20%;
-                padding: 2px;
+                padding: 5px;
             }
             .th2, .th3, .th4, .th5, .th6, .th7, .th8 . th9 {
                 width: 10%;
-                padding: 2px;
+                padding: 5px;
             }
             .td1 {
                 width: 20%;
-                padding: 2px;
+                padding: 5px;
                 background-color: white;
             }
             .td2, .td3, .td4, .td5, .td6, .td7, .td8, .td9 {
                 width: 10%;
-                padding: 2px;
+                padding: 5px;
                 background-color: white;
             }
             tbody tr .td9 button {
@@ -119,11 +119,11 @@ const Container = styled.div`
             }
             #tth1, #tth2, #tth3, #tth4, #tth5, #tth6 {
                 width: 16.67%;
-                padding: 2px;
+                padding: 5px;
             }
             #ttd1, #ttd2, #ttd3, #ttd4, #ttd5, #ttd6 {
                 width: 16.67%;
-                padding: 2px;
+                padding: 5px;
                 background-color: white;
                 font-weight: bold;
             }
@@ -269,7 +269,6 @@ const Meals = () => {
 
                 if (response.ok) {
                     const meals = await response.json();
-                    console.log(meals);
 
                     let tempBreakfasts: MealDataTypes[] = [];
                     let tempLunches: MealDataTypes[] = [];
@@ -321,7 +320,7 @@ const Meals = () => {
                         switch(meals[i].mealType) {
                             case 'breakfast':
                                 tempBreakfasts.push(meals[i]);
-                                if (meals[i].calories) {
+                                if (meals[i].calorie) {
                                     tempSumBreakfasts.calorie += meals[i].calorie;
                                     tempSumMeals.calorie += meals[i].calorie;
                                 }
@@ -458,7 +457,7 @@ const Meals = () => {
         }
 
         getCurrentDate();
-    }, []);
+    }, [consumer.authenticated]);
 
     const openModal = (meal:string) => {
         setModalIsOpen(true);
@@ -637,11 +636,11 @@ const Meals = () => {
                             setBreakfasts((prevBreakfasts) => [...prevBreakfasts, newMeal]);
 
                             let tempSumBreakfasts: MealSumDataTypes = {
-                                calorie: sumBreakfasts.calorie + (newMeal?.calories || 0),
-                                fat: sumBreakfasts.fat + (newMeal?.totalFat || 0),
+                                calorie: sumBreakfasts.calorie + (newMeal?.calorie || 0),
+                                fat: sumBreakfasts.fat + (newMeal?.fat || 0),
                                 cholesterol: sumBreakfasts.cholesterol + (newMeal?.cholesterol || 0),
                                 sodium: sumBreakfasts.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumBreakfasts.carbohydrate + (newMeal?.totalCarbohydrate || 0),
+                                carbohydrate: sumBreakfasts.carbohydrate + (newMeal?.carbohydrate || 0),
                                 protein: sumBreakfasts.protein + (newMeal?.protein || 0)
                             }
                             setSumBreakfasts(tempSumBreakfasts);
@@ -651,11 +650,11 @@ const Meals = () => {
                             setLunches((prevLunches) => [...prevLunches, newMeal]);
 
                             let tempSumLunches: MealSumDataTypes = {
-                                calorie: sumLunches.calorie + (newMeal?.calories || 0),
-                                fat: sumLunches.fat + (newMeal?.totalFat || 0),
+                                calorie: sumLunches.calorie + (newMeal?.calorie || 0),
+                                fat: sumLunches.fat + (newMeal?.fat || 0),
                                 cholesterol: sumLunches.cholesterol + (newMeal?.cholesterol || 0),
                                 sodium: sumLunches.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumLunches.carbohydrate + (newMeal?.totalCarbohydrate || 0),
+                                carbohydrate: sumLunches.carbohydrate + (newMeal?.carbohydrate || 0),
                                 protein: sumLunches.protein + (newMeal?.protein || 0)
                             }
                             setSumLunches(tempSumLunches);
@@ -665,11 +664,11 @@ const Meals = () => {
                             setDinners((prevDinners) => [...prevDinners, newMeal]);
 
                             let tempSumDinners: MealSumDataTypes = {
-                                calorie: sumDinners.calorie + (newMeal?.calories || 0),
-                                fat: sumDinners.fat + (newMeal?.totalFat || 0),
+                                calorie: sumDinners.calorie + (newMeal?.calorie || 0),
+                                fat: sumDinners.fat + (newMeal?.fat || 0),
                                 cholesterol: sumDinners.cholesterol + (newMeal?.cholesterol || 0),
                                 sodium: sumDinners.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumDinners.carbohydrate + (newMeal?.totalCarbohydrate || 0),
+                                carbohydrate: sumDinners.carbohydrate + (newMeal?.carbohydrate || 0),
                                 protein: sumDinners.protein + (newMeal?.protein || 0)
                             }
                             setSumDinners(tempSumDinners);
@@ -679,11 +678,11 @@ const Meals = () => {
                             setSnacks((prevSnacks) => [...prevSnacks, newMeal]);
 
                             let tempSumSnacks: MealSumDataTypes = {
-                                calorie: sumSnacks.calorie + (newMeal?.calories || 0),
-                                fat: sumSnacks.fat + (newMeal?.totalFat || 0),
+                                calorie: sumSnacks.calorie + (newMeal?.calorie || 0),
+                                fat: sumSnacks.fat + (newMeal?.fat || 0),
                                 cholesterol: sumSnacks.cholesterol + (newMeal?.cholesterol || 0),
                                 sodium: sumSnacks.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumSnacks.carbohydrate + (newMeal?.totalCarbohydrate || 0),
+                                carbohydrate: sumSnacks.carbohydrate + (newMeal?.carbohydrate || 0),
                                 protein: sumSnacks.protein + (newMeal?.protein || 0)
                             }
                             setSumSnacks(tempSumSnacks);
@@ -692,19 +691,20 @@ const Meals = () => {
                     }
 
                     let tempSumMeals: MealSumDataTypes = {
-                        calorie: sumBreakfasts.calorie + sumLunches.calorie + sumDinners.calorie + sumSnacks.calorie,
-                        fat: sumBreakfasts.fat + sumLunches.fat + sumLunches.fat + sumSnacks.fat,
-                        cholesterol: sumBreakfasts.cholesterol + sumLunches.cholesterol + sumDinners.cholesterol + sumSnacks.cholesterol,
-                        sodium: sumBreakfasts.sodium + sumLunches.sodium + sumDinners.sodium + sumSnacks.sodium,
-                        carbohydrate: sumBreakfasts.carbohydrate + sumLunches.carbohydrate + sumDinners.carbohydrate + sumSnacks.carbohydrate,
-                        protein: sumBreakfasts.protein + sumLunches.protein + sumDinners.protein + sumSnacks.protein
+                        calorie: sumMeals.calorie + (newMeal?.calorie || 0),
+                        fat: sumMeals.fat + (newMeal?.fat || 0),
+                        cholesterol: sumMeals.cholesterol + (newMeal?.cholesterol || 0),
+                        sodium: sumMeals.sodium + (newMeal?.sodium || 0),
+                        carbohydrate: sumMeals.carbohydrate + (newMeal?.carbohydrate || 0),
+                        protein: sumMeals.protein + (newMeal?.protein || 0)
                     }
                     setSumMeals(tempSumMeals);
-                } 
+                }
                 else {
                     const error = await response.json();
                     console.log(error);
                 }
+                closeModal();
             } 
             catch (err) {
                 console.log(`Error: ${err}`);
@@ -734,7 +734,7 @@ const Meals = () => {
                                     <th className='th6' scope='col'>Carbohydrate</th>
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
-                                    <th className='th9' scope='col'>Edit?</th>
+                                    <th className='th9' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -803,7 +803,7 @@ const Meals = () => {
                                     <th className='th6' scope='col'>Carbohydrate</th>
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
-                                    <th className='th9' scope='col'>Edit?</th>
+                                    <th className='th9' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -872,7 +872,7 @@ const Meals = () => {
                                     <th className='th6' scope='col'>Carbohydrate</th>
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
-                                    <th className='th9' scope='col'>Edit?</th>
+                                    <th className='th9' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -905,8 +905,8 @@ const Meals = () => {
                                 <tr>
                                     <th className='tf1' scope='row'>Totals</th>
                                     <td className='tf2'>{sumDinners.calorie}</td>
-                                    <td className='tf3'>{sumDinners.fat}</td>
-                                    <td className='tf4'>{sumDinners.cholesterol}</td>
+                                    <td className='tf3'>{sumDinners.fat}g</td>
+                                    <td className='tf4'>{sumDinners.cholesterol}mg</td>
                                     <td className='tf5'>{sumDinners.sodium}mg</td>
                                     <td className='tf6'>{sumDinners.carbohydrate}g</td>
                                     <td className='tf7'>{sumDinners.protein}g</td>
@@ -941,7 +941,7 @@ const Meals = () => {
                                     <th className='th6' scope='col'>Carbohydrate</th>
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
-                                    <th className='th9' scope='col'>Edit?</th>
+                                    <th className='th9' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -974,8 +974,8 @@ const Meals = () => {
                                 <tr>
                                     <th className='tf1' scope='row'>Totals</th>
                                     <td className='tf2'>{sumSnacks.calorie}</td>
-                                    <td className='tf3'>{sumSnacks.fat}</td>
-                                    <td className='tf4'>{sumSnacks.cholesterol}</td>
+                                    <td className='tf3'>{sumSnacks.fat}g</td>
+                                    <td className='tf4'>{sumSnacks.cholesterol}mg</td>
                                     <td className='tf5'>{sumSnacks.sodium}mg</td>
                                     <td className='tf6'>{sumSnacks.carbohydrate}g</td>
                                     <td className='tf7'>{sumSnacks.protein}g</td>
@@ -1011,8 +1011,8 @@ const Meals = () => {
                     <tbody>
                         <tr>
                             <td id='ttd1'>{sumMeals.calorie === null ? '0' : sumMeals.calorie}</td>
-                            <td id='ttd2'>{sumMeals.fat === null ? '0' : sumMeals.fat}</td>
-                            <td id='ttd3'>{sumMeals.cholesterol === null ? '0' : sumMeals.cholesterol}</td>
+                            <td id='ttd2'>{sumMeals.fat === null ? '0' : sumMeals.fat}g</td>
+                            <td id='ttd3'>{sumMeals.cholesterol === null ? '0' : sumMeals.cholesterol}mg</td>
                             <td id='ttd4'>{sumMeals.sodium === null ? '0' : sumMeals.sodium}mg</td>
                             <td id='ttd5'>{sumMeals.carbohydrate === null ? '0' : sumMeals.carbohydrate}g</td>
                             <td id='ttd6'>{sumMeals.protein === null ? '0' : sumMeals.protein}g</td>
@@ -1067,9 +1067,9 @@ const Meals = () => {
                         </div>
 
                         <div>
-                            <label htmlFor='meal-total-fat'><b>Total Fat:</b> (grams)</label>
+                            <label htmlFor='meal-fat'><b>Fat:</b> (grams)</label>
                             <input
-                                id='meal-total-fat'
+                                id='meal-fat'
                                 type='number'
                                 value={formData.fat}
                                 onChange={(e) => {
@@ -1112,9 +1112,9 @@ const Meals = () => {
                         </div>
                         
                         <div>
-                            <label htmlFor='meal-total-carbohydrate'><b>Carbohydrate:</b> (grams)</label>
+                            <label htmlFor='meal-carbohydrate'><b>Carbohydrate:</b> (grams)</label>
                             <input
-                                id='meal-total-carbohydrate'
+                                id='meal-carbohydrate'
                                 type='number'
                                 value={formData.carbohydrate}
                                 onChange={(e) => {

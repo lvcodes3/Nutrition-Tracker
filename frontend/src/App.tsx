@@ -6,13 +6,15 @@ import 'react-toastify/dist/ReactToastify.css';
 // context //
 import { ConsumerType, initialConsumer, AuthContext } from './context/AuthContext';
 // pages //
-import Home from './pages/Home';
+import AuthHome from './pages/AuthHome';
+import UnauthHome from './pages/UnauthHome';
 import Meals from './pages/Meals';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Login from './pages/Login';
 // components //
-import Navbar from './components/Navbar';
+import AuthNavbar from './components/AuthNavbar';
+import UnauthNavbar from './components/UnauthNavbar';
 import Footer from './components/Footer';
 
 function App() {
@@ -52,15 +54,31 @@ function App() {
       <AuthContext.Provider value={{ consumer, setConsumer }}>
         <Router>
           <ToastContainer />
-          <Navbar />
-          <Routes>
-            <Route path='/' element={ <Home /> } />
-            <Route path='/meals' element={ <Meals /> } />
-            <Route path='/profile' element={ <Profile /> } />
-            <Route path='/register' element={ <Register /> } />
-            <Route path='/login' element={ <Login /> } />
-          </Routes>
-          <Footer />
+          {
+            consumer.authenticated ? (
+              <>
+                <AuthNavbar />
+                <Routes>
+                  <Route path='/' element={ <AuthHome /> } />
+                  <Route path='/meals' element={ <Meals /> } />
+                  <Route path='/profile' element={ <Profile /> } />
+                  <Route path='/register' element={ <Register /> } />
+                  <Route path='/login' element={ <Login /> } />
+                </Routes>
+                <Footer />
+              </>
+            ) : (
+              <>
+                <UnauthNavbar />
+                <Routes>
+                  <Route path='/' element={ <UnauthHome /> } />
+                  <Route path='/register' element={ <Register /> } />
+                  <Route path='/login' element={ <Login /> } />
+                </Routes>
+                <Footer />
+              </>
+            )
+          }
         </Router>
       </AuthContext.Provider>
     </>

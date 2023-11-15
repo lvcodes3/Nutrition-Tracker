@@ -33,9 +33,9 @@ const addBreakfast = (async (req, res) => {
 
         // insert data //
         let result = await db.query(
-            `INSERT into breakfast (userId, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt)
+            `INSERT into breakfast ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'breakfast' AS mealType;`,
+             RETURNING *, 'breakfast' AS "mealType";`,
             [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -83,9 +83,9 @@ const addLunch = (async (req, res) => {
 
         // insert data //
         let result = await db.query(
-            `INSERT into lunch (userId, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt)
+            `INSERT into lunch ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'lunch' AS mealType;`,
+             RETURNING *, 'lunch' AS "mealType";`,
             [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -133,9 +133,9 @@ const addDinner = (async (req, res) => {
 
         // insert data //
         let result = await db.query(
-            `INSERT into dinner (userId, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt)
+            `INSERT into dinner ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'dinner' AS mealType;`,
+             RETURNING *, 'dinner' AS "mealType";`,
             [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -183,9 +183,9 @@ const addSnack = (async (req, res) => {
 
         // insert data //
         let result = await db.query(
-            `INSERT into snacks (userId, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt)
+            `INSERT into snack ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'snack' AS mealType;`,
+             RETURNING *, 'snack' AS "mealType";`,
             [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
@@ -211,20 +211,15 @@ const getDailyMeals = (async (req, res) => {
 
         // get current date's meals //
         let result = await db.query(
-            `SELECT *, 'breakfast' AS mealType FROM breakfast WHERE userId=$1 AND DATE(consumedAt)=$2
+            `SELECT *, 'breakfast' AS "mealType" FROM breakfast WHERE "consumerId"=$1 AND DATE("consumedAt")=$2
              UNION ALL
-             SELECT *, 'lunch' AS mealType FROM lunch WHERE userId=$1 AND DATE(consumedAt)=$2
+             SELECT *, 'lunch' AS "mealType" FROM lunch WHERE "consumerId"=$1 AND DATE("consumedAt")=$2
              UNION ALL
-             SELECT *, 'dinner' AS mealType FROM dinner WHERE userId=$1 AND DATE(consumedAt)=$2
+             SELECT *, 'dinner' AS "mealType" FROM dinner WHERE "consumerId"=$1 AND DATE("consumedAt")=$2
              UNION ALL
-             SELECT *, 'snack' AS mealType FROM snack WHERE userId=$1 AND DATE(consumedAt)=$2;`,
+             SELECT *, 'snack' AS "mealType" FROM snack WHERE "consumerId"=$1 AND DATE("consumedAt")=$2;`,
             [req.consumer.id, date]
         );
-        if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error getting daily meals.' });
-        }
-
-        // return current date's meals //
         return res.status(200).json(result.rows);
     } 
     catch (err) {

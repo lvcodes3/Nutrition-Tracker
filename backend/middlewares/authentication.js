@@ -13,7 +13,7 @@ const protect = (async (req, res, next) => {
 
             // get the consumer //
             let result = await db.query(
-                `SELECT id, firstName, email, createdAt, updatedAt, lastSignedIn FROM consumer
+                `SELECT id, "firstName", email, "createdAt", "updatedAt", "lastSignedIn" FROM consumer
                  WHERE id=$1;`,
                 [decoded.id]
             );
