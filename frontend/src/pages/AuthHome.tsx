@@ -10,7 +10,7 @@ import FoodBanner from './images/food-banner.png';
 const AuthHomeContainer = styled.div`
     border: 1px solid red;
     width: 100%;
-    height: auto;
+    height: calc(100vh - 100px);
     background-color: #D9D9D9;
 
     #user-header-div {

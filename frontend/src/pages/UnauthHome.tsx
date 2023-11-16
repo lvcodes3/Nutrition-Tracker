@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const UnauthHomeContainer = styled.div`
-width: 100%;
-height: auto;
-background-color: #D9D9D9;
+    width: 100%;
+    height: calc(100vh - 100px);
+    background-color: #D9D9D9;
 `;
 
 const UnauthHome = () => {

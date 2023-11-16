@@ -13,6 +13,9 @@ router.post('/addBreakfast', protect, nutritionController.addBreakfast);
 router.post('/addLunch', protect, nutritionController.addLunch);
 router.post('/addDinner', protect, nutritionController.addDinner);
 router.post('/addSnack', protect, nutritionController.addSnack);
+
 router.post('/getDailyMeals', protect, nutritionController.getDailyMeals);
+
+router.post('/deleteMeal', protect, nutritionController.deleteMeal);
 
 module.exports = router;

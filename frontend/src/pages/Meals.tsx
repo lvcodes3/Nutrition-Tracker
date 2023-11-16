@@ -13,7 +13,7 @@ Modal.setAppElement('#root');
 
 const Container = styled.div`
     width: 100%;
-    height: 100%;
+    min-height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
     background-color: #D9D9D9;
@@ -50,8 +50,12 @@ const Container = styled.div`
                 width: 20%;
                 padding: 5px;
             }
-            .th2, .th3, .th4, .th5, .th6, .th7, .th8 . th9 {
+            .th2, .th3, .th4, .th5, .th6, .th7, .th8 {
                 width: 10%;
+                padding: 5px;
+            }
+            .th9, .th10 {
+                width: 5%;
                 padding: 5px;
             }
             .td1 {
@@ -59,18 +63,29 @@ const Container = styled.div`
                 padding: 5px;
                 background-color: white;
             }
-            .td2, .td3, .td4, .td5, .td6, .td7, .td8, .td9 {
+            .td2, .td3, .td4, .td5, .td6, .td7, .td8 {
                 width: 10%;
                 padding: 5px;
                 background-color: white;
             }
+            .td9, .td10 {
+                width: 5%;
+                padding: 5px;
+                background-color: white;
+            }
             tbody tr .td9 button {
-                width: 40px;
-                padding: 2px;
                 cursor: pointer;
                 background-color: white;
-                border: 2px solid #88BBD6;
+                border: 3px solid orange;
                 border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+            tbody tr .td10 button {
+                cursor: pointer;
+                background-color: white;
+                border: 3px solid red;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
             }
             tfoot tr {
                 background-color: #88BBD6;
@@ -79,21 +94,26 @@ const Container = styled.div`
                 width: 20%;
                 padding: 5px;
             }
-            .tf2, .tf3, .tf4, .tf5, .tf6, .tf7, .tf8, .tf9 {
+            .tf2, .tf3, .tf4, .tf5, .tf6, .tf7, .tf8 {
                 width: 10%;
                 padding: 5px;
                 font-weight: bold;
             }
+            .tf9, .tf10 {
+                width: 5%;
+                padding: 5px;
+            }
         }
 
         .add-meal-btn {
-            width: 110px;
+            width: auto;
             height: 25px;
             cursor: pointer;
             font-weight: bold;
             background-color: white;
-            border: 2px solid green;
+            border: 3px solid green;
             border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
         }
     }
 
@@ -636,12 +656,12 @@ const Meals = () => {
                             setBreakfasts((prevBreakfasts) => [...prevBreakfasts, newMeal]);
 
                             let tempSumBreakfasts: MealSumDataTypes = {
-                                calorie: sumBreakfasts.calorie + (newMeal?.calorie || 0),
-                                fat: sumBreakfasts.fat + (newMeal?.fat || 0),
-                                cholesterol: sumBreakfasts.cholesterol + (newMeal?.cholesterol || 0),
-                                sodium: sumBreakfasts.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumBreakfasts.carbohydrate + (newMeal?.carbohydrate || 0),
-                                protein: sumBreakfasts.protein + (newMeal?.protein || 0)
+                                calorie: sumBreakfasts.calorie + (newMeal.calorie || 0),
+                                fat: sumBreakfasts.fat + (newMeal.fat || 0),
+                                cholesterol: sumBreakfasts.cholesterol + (newMeal.cholesterol || 0),
+                                sodium: sumBreakfasts.sodium + (newMeal.sodium || 0),
+                                carbohydrate: sumBreakfasts.carbohydrate + (newMeal.carbohydrate || 0),
+                                protein: sumBreakfasts.protein + (newMeal.protein || 0)
                             }
                             setSumBreakfasts(tempSumBreakfasts);
 
@@ -650,12 +670,12 @@ const Meals = () => {
                             setLunches((prevLunches) => [...prevLunches, newMeal]);
 
                             let tempSumLunches: MealSumDataTypes = {
-                                calorie: sumLunches.calorie + (newMeal?.calorie || 0),
-                                fat: sumLunches.fat + (newMeal?.fat || 0),
-                                cholesterol: sumLunches.cholesterol + (newMeal?.cholesterol || 0),
-                                sodium: sumLunches.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumLunches.carbohydrate + (newMeal?.carbohydrate || 0),
-                                protein: sumLunches.protein + (newMeal?.protein || 0)
+                                calorie: sumLunches.calorie + (newMeal.calorie || 0),
+                                fat: sumLunches.fat + (newMeal.fat || 0),
+                                cholesterol: sumLunches.cholesterol + (newMeal.cholesterol || 0),
+                                sodium: sumLunches.sodium + (newMeal.sodium || 0),
+                                carbohydrate: sumLunches.carbohydrate + (newMeal.carbohydrate || 0),
+                                protein: sumLunches.protein + (newMeal.protein || 0)
                             }
                             setSumLunches(tempSumLunches);
 
@@ -664,12 +684,12 @@ const Meals = () => {
                             setDinners((prevDinners) => [...prevDinners, newMeal]);
 
                             let tempSumDinners: MealSumDataTypes = {
-                                calorie: sumDinners.calorie + (newMeal?.calorie || 0),
-                                fat: sumDinners.fat + (newMeal?.fat || 0),
-                                cholesterol: sumDinners.cholesterol + (newMeal?.cholesterol || 0),
-                                sodium: sumDinners.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumDinners.carbohydrate + (newMeal?.carbohydrate || 0),
-                                protein: sumDinners.protein + (newMeal?.protein || 0)
+                                calorie: sumDinners.calorie + (newMeal.calorie || 0),
+                                fat: sumDinners.fat + (newMeal.fat || 0),
+                                cholesterol: sumDinners.cholesterol + (newMeal.cholesterol || 0),
+                                sodium: sumDinners.sodium + (newMeal.sodium || 0),
+                                carbohydrate: sumDinners.carbohydrate + (newMeal.carbohydrate || 0),
+                                protein: sumDinners.protein + (newMeal.protein || 0)
                             }
                             setSumDinners(tempSumDinners);
 
@@ -678,12 +698,12 @@ const Meals = () => {
                             setSnacks((prevSnacks) => [...prevSnacks, newMeal]);
 
                             let tempSumSnacks: MealSumDataTypes = {
-                                calorie: sumSnacks.calorie + (newMeal?.calorie || 0),
-                                fat: sumSnacks.fat + (newMeal?.fat || 0),
-                                cholesterol: sumSnacks.cholesterol + (newMeal?.cholesterol || 0),
-                                sodium: sumSnacks.sodium + (newMeal?.sodium || 0),
-                                carbohydrate: sumSnacks.carbohydrate + (newMeal?.carbohydrate || 0),
-                                protein: sumSnacks.protein + (newMeal?.protein || 0)
+                                calorie: sumSnacks.calorie + (newMeal.calorie || 0),
+                                fat: sumSnacks.fat + (newMeal.fat || 0),
+                                cholesterol: sumSnacks.cholesterol + (newMeal.cholesterol || 0),
+                                sodium: sumSnacks.sodium + (newMeal.sodium || 0),
+                                carbohydrate: sumSnacks.carbohydrate + (newMeal.carbohydrate || 0),
+                                protein: sumSnacks.protein + (newMeal.protein || 0)
                             }
                             setSumSnacks(tempSumSnacks);
 
@@ -691,12 +711,12 @@ const Meals = () => {
                     }
 
                     let tempSumMeals: MealSumDataTypes = {
-                        calorie: sumMeals.calorie + (newMeal?.calorie || 0),
-                        fat: sumMeals.fat + (newMeal?.fat || 0),
-                        cholesterol: sumMeals.cholesterol + (newMeal?.cholesterol || 0),
-                        sodium: sumMeals.sodium + (newMeal?.sodium || 0),
-                        carbohydrate: sumMeals.carbohydrate + (newMeal?.carbohydrate || 0),
-                        protein: sumMeals.protein + (newMeal?.protein || 0)
+                        calorie: sumMeals.calorie + (newMeal.calorie || 0),
+                        fat: sumMeals.fat + (newMeal.fat || 0),
+                        cholesterol: sumMeals.cholesterol + (newMeal.cholesterol || 0),
+                        sodium: sumMeals.sodium + (newMeal.sodium || 0),
+                        carbohydrate: sumMeals.carbohydrate + (newMeal.carbohydrate || 0),
+                        protein: sumMeals.protein + (newMeal.protein || 0)
                     }
                     setSumMeals(tempSumMeals);
                 }
@@ -710,6 +730,163 @@ const Meals = () => {
                 console.log(`Error: ${err}`);
                 //toast.error('An error occurred, please try again.');
             }
+        }
+    }
+
+    const deleteMeal = async (id: number, mealType: string) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/v1/nutrition/deleteMeal`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, mealType })
+                }
+            );
+
+            if (response.ok) {
+                switch (mealType) {
+                    case 'breakfast':
+                        // find breakfast by id //
+                        const breakfastToBeRemoved: MealDataTypes | undefined = breakfasts.find(
+                            (breakfast) => breakfast.id === id
+                        );
+
+                        // update sum of all breakfasts & sum of all meals //
+                        if (breakfastToBeRemoved) {
+                            setSumBreakfasts((prevSum) => ({
+                                calorie: prevSum.calorie - (breakfastToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (breakfastToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (breakfastToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (breakfastToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (breakfastToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (breakfastToBeRemoved.protein || 0)
+                            }));
+
+                            setSumMeals((prevSum) => ({
+                                calorie: prevSum.calorie - (breakfastToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (breakfastToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (breakfastToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (breakfastToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (breakfastToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (breakfastToBeRemoved.protein || 0)
+                            }));
+                        }
+
+                        // remove breakfast from breakfasts //
+                        setBreakfasts((prevBreakfasts) => {
+                            return prevBreakfasts.filter((breakfast) => breakfast.id !== id);
+                        });
+                        break;
+                    case 'lunch':
+                        // find lunch by id //
+                        const lunchToBeRemoved: MealDataTypes | undefined = lunches.find(
+                            (lunch) => lunch.id === id
+                        );
+
+                        // update sum of all lunches & sum of all meals //
+                        if (lunchToBeRemoved) {
+                            setSumLunches((prevSum) => ({
+                                calorie: prevSum.calorie - (lunchToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (lunchToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (lunchToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (lunchToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (lunchToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (lunchToBeRemoved.protein || 0)
+                            }));
+
+                            setSumMeals((prevSum) => ({
+                                calorie: prevSum.calorie - (lunchToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (lunchToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (lunchToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (lunchToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (lunchToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (lunchToBeRemoved.protein || 0)
+                            }));
+                        }
+
+                        // remove lunch from lunches //
+                        setLunches((prevLunches) => {
+                            return prevLunches.filter((lunch) => lunch.id !== id);
+                        });
+                        break;
+                    case 'dinner':
+                        // find dinner by id //
+                        const dinnerToBeRemoved: MealDataTypes | undefined = dinners.find(
+                            (dinner) => dinner.id === id
+                        );
+
+                        // update sum of all dinners & sum of all meals //
+                        if (dinnerToBeRemoved) {
+                            setSumDinners((prevSum) => ({
+                                calorie: prevSum.calorie - (dinnerToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (dinnerToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (dinnerToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (dinnerToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (dinnerToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (dinnerToBeRemoved.protein || 0)
+                            }));
+
+                            setSumMeals((prevSum) => ({
+                                calorie: prevSum.calorie - (dinnerToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (dinnerToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (dinnerToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (dinnerToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (dinnerToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (dinnerToBeRemoved.protein || 0)
+                            }));
+                        }
+
+                        // remove dinner from dinners //
+                        setDinners((prevDinners) => {
+                            return prevDinners.filter((dinner) => dinner.id !== id);
+                        });
+                        break;
+                    case 'snack':
+                        // find snack by id //
+                        const snackToBeRemoved: MealDataTypes | undefined = snacks.find(
+                            (snack) => snack.id === id
+                        );
+
+                        // update sum of all snacks & sum of all meals //
+                        if (snackToBeRemoved) {
+                            setSumSnacks((prevSum) => ({
+                                calorie: prevSum.calorie - (snackToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (snackToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (snackToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (snackToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (snackToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (snackToBeRemoved.protein || 0)
+                            }));
+
+                            setSumMeals((prevSum) => ({
+                                calorie: prevSum.calorie - (snackToBeRemoved.calorie || 0),
+                                fat: prevSum.fat - (snackToBeRemoved.fat || 0),
+                                cholesterol: prevSum.cholesterol - (snackToBeRemoved.cholesterol || 0),
+                                sodium: prevSum.sodium - (snackToBeRemoved.sodium || 0),
+                                carbohydrate: prevSum.carbohydrate - (snackToBeRemoved.carbohydrate || 0),
+                                protein: prevSum.protein - (snackToBeRemoved.protein || 0)
+                            }));
+                        }
+
+                        // remove snack from snacks //
+                        setSnacks((prevSnacks) => {
+                            return prevSnacks.filter((snack) => snack.id !== id);
+                        });
+                        break;
+                }    
+            }
+            else {
+                const error = await response.json();
+                console.log(error);
+            }
+        } 
+        catch (err) {
+            console.log(`Error: ${err}`);
+            //toast.error('An error occurred, please try again.');
         }
     }
 
@@ -735,6 +912,7 @@ const Meals = () => {
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
                                     <th className='th9' scope='col'></th>
+                                    <th className='th10' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -758,7 +936,16 @@ const Meals = () => {
                                             })
                                         }
                                         </td>
-                                        <td className='td9'><button>Edit</button></td>
+                                        <td className='td9'>
+                                            <button>Edit</button>
+                                        </td>
+                                        <td className='td10'>
+                                            <button onClick={() => {
+                                                deleteMeal(breakfast.id, breakfast.mealType)
+                                            }}>
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             }
@@ -774,6 +961,7 @@ const Meals = () => {
                                     <td className='tf7'>{sumBreakfasts.protein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
+                                    <td className='tf10'></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -804,6 +992,7 @@ const Meals = () => {
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
                                     <th className='th9' scope='col'></th>
+                                    <th className='th10' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -827,7 +1016,16 @@ const Meals = () => {
                                             })
                                         }
                                         </td>
-                                        <td className='td9'><button>Edit</button></td>
+                                        <td className='td9'>
+                                            <button>Edit</button>
+                                        </td>
+                                        <td className='td10'>
+                                            <button onClick={() => {
+                                                deleteMeal(lunch.id, lunch.mealType)
+                                            }}>
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             }
@@ -843,6 +1041,7 @@ const Meals = () => {
                                     <td className='tf7'>{sumLunches.protein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
+                                    <td className='tf10'></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -873,6 +1072,7 @@ const Meals = () => {
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
                                     <th className='th9' scope='col'></th>
+                                    <th className='th10' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -896,7 +1096,16 @@ const Meals = () => {
                                             })
                                         }
                                         </td>
-                                        <td className='td9'><button>Edit</button></td>
+                                        <td className='td9'>
+                                            <button>Edit</button>
+                                        </td>
+                                        <td className='td10'>
+                                            <button onClick={() => {
+                                                deleteMeal(dinner.id, dinner.mealType)
+                                            }}>
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             }
@@ -912,6 +1121,7 @@ const Meals = () => {
                                     <td className='tf7'>{sumDinners.protein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
+                                    <td className='tf10'></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -942,6 +1152,7 @@ const Meals = () => {
                                     <th className='th7' scope='col'>Protein</th>
                                     <th className='th8' scope='col'>Consumed At</th>
                                     <th className='th9' scope='col'></th>
+                                    <th className='th10' scope='col'></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -965,7 +1176,16 @@ const Meals = () => {
                                             })
                                         }
                                         </td>
-                                        <td className='td9'><button>Edit</button></td>
+                                        <td className='td9'>
+                                            <button>Edit</button>
+                                        </td>
+                                        <td className='td10'>
+                                            <button onClick={() => {
+                                                deleteMeal(snack.id, snack.mealType)
+                                            }}>
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             }
@@ -981,6 +1201,7 @@ const Meals = () => {
                                     <td className='tf7'>{sumSnacks.protein}g</td>
                                     <td className='tf8'></td>
                                     <td className='tf9'></td>
+                                    <td className='tf10'></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -1181,7 +1402,7 @@ const CustomModal = styled(Modal)`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: #88BBD6;
+        background-color: white;
         text-align: center;
         border: 1px solid black;
 
@@ -1217,7 +1438,7 @@ const CustomModal = styled(Modal)`
                     text-align: left;
                 }
                 input {
-                    border: 1px solid black;
+                    border: 3px solid #4484CE;
                     border-radius: 10px;
                 }
             }
@@ -1225,12 +1446,11 @@ const CustomModal = styled(Modal)`
             button {
                 margin: 0 auto;
                 width: 225px;
-                font-weight: bold;
-                border: 1px solid black;
-                border-radius: 10px;
-                color: white;
-                background-color: black;
                 cursor: pointer;
+                font-weight: bold;
+                background-color: white;
+                border: 3px solid green;
+                border-radius: 10px;
             }
         }
     }

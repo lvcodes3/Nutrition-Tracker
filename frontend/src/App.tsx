@@ -12,6 +12,7 @@ import Meals from './pages/Meals';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import NotFound from './pages/NotFound';
 // components //
 import AuthNavbar from './components/AuthNavbar';
 import UnauthNavbar from './components/UnauthNavbar';
@@ -64,6 +65,7 @@ function App() {
                   <Route path='/profile' element={ <Profile /> } />
                   <Route path='/register' element={ <Register /> } />
                   <Route path='/login' element={ <Login /> } />
+                  <Route path='*' element={ <NotFound /> } />
                 </Routes>
                 <Footer />
               </>
@@ -74,6 +76,7 @@ function App() {
                   <Route path='/' element={ <UnauthHome /> } />
                   <Route path='/register' element={ <Register /> } />
                   <Route path='/login' element={ <Login /> } />
+                  <Route path='*' element={ <NotFound /> } />
                 </Routes>
                 <Footer />
               </>

@@ -228,10 +228,32 @@ const getDailyMeals = (async (req, res) => {
     }
 });
 
+const deleteMeal = (async (req, res) => {
+    try {
+        let { id, mealType } = req.body;
+
+        let result = await db.query(
+            `DELETE FROM ${mealType}
+             WHERE id=$1;`,
+            [id]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ err: 'Meal not found.' });
+        }
+
+        return res.status(204).send();
+    } 
+    catch (err) {
+        console.log(`Error deleting meal: ${err}`);
+        return res.status(500).json({ err: 'Error deleting meal.' });
+    }
+});
+
 module.exports = {
     addBreakfast,
     addLunch,
     addDinner,
     addSnack,
-    getDailyMeals
+    getDailyMeals,
+    deleteMeal
 };

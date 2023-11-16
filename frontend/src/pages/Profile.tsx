@@ -8,7 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const ProfileContainer = styled.div`
     width: 100%;
-    height: auto;
+    height: calc(100vh - 100px);
 
     
 `;
@@ -20,9 +20,11 @@ const Profile = () => {
     const navigate = useNavigate();
 
     return (
-        <div>
-            Profile
-        </div>
+        <ProfileContainer>
+            <div>
+                <h1>{consumer.firstName}</h1>
+            </div>
+        </ProfileContainer>
     );
 }
 export default Profile;
