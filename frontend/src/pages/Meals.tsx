@@ -159,7 +159,8 @@ const Meals = () => {
     const [displayDate, setDisplayDate] = useState<null | string>(null);
     const [queryDate, setQueryDate] = useState<null | string>(null);
     const [selectedMeal, setSelectedMeal] = useState<null | string>(null);
-    const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+    const [addMealModalIsOpen, setAddMealModalIsOpen] = useState<boolean>(false);
+    const [updateMealModalIsOpen, setUpdateMealModalIsOpen] = useState<boolean>(false);
 
     interface MealDataTypes {
         id: number;
@@ -479,12 +480,81 @@ const Meals = () => {
         getCurrentDate();
     }, [consumer.authenticated]);
 
-    const openModal = (meal:string) => {
-        setModalIsOpen(true);
+    const openAddMealModal = (meal:string) => {
+        setAddMealModalIsOpen(true);
         setSelectedMeal(meal);
     }
-    const closeModal = () => {
-        setModalIsOpen(false);
+    const closeAddMealModal = () => {
+        setAddMealModalIsOpen(false);
+        setSelectedMeal(null);
+        setFormData({
+            name: '',
+            calorie: '',
+            fat: '',
+            cholesterol: '',
+            sodium: '',
+            carbohydrate: '',
+            protein: '',
+            consumedAt: ''
+        });
+        setFormDataErrors({
+            name: '',
+            calorie: '',
+            fat: '',
+            cholesterol: '',
+            sodium: '',
+            carbohydrate: '',
+            protein: '',
+            consumedAt: ''
+        });
+    }
+
+    const openUpdateMealModal = (meal: string, id: number) => {
+        setUpdateMealModalIsOpen(true);
+        setSelectedMeal(meal);
+
+        // find meal by id //
+        let mealToBeUpdated: MealDataTypes | undefined = undefined;
+        switch (meal) {
+            case 'Breakfast':
+                mealToBeUpdated = breakfasts.find(
+                    (breakfast) => breakfast.id === id
+                );
+                break;
+            case 'Lunch':
+                mealToBeUpdated = lunches.find(
+                    (lunch) => lunch.id === id
+                );
+                break;
+            case 'Dinner':
+                mealToBeUpdated = dinners.find(
+                    (dinner) => dinner.id === id
+                );
+                break;
+            case 'Snack':
+                mealToBeUpdated = snacks.find(
+                    (snack) => snack.id === id
+                );
+                break;
+        }
+
+        if (mealToBeUpdated) {
+            // TODO: convert consumedAt format from 2023-11-16T21:34:00.000Z to 2023-11-16T15:45
+
+            setFormData({
+                name: mealToBeUpdated.name,
+                calorie: (mealToBeUpdated.calorie ? mealToBeUpdated.calorie.toString() : ''),
+                fat: (mealToBeUpdated.fat ? mealToBeUpdated.fat.toString() : ''),
+                cholesterol: (mealToBeUpdated.cholesterol ? mealToBeUpdated.cholesterol.toString() : ''),
+                sodium: (mealToBeUpdated.sodium ? mealToBeUpdated.sodium.toString() : ''),
+                carbohydrate: (mealToBeUpdated.carbohydrate ? mealToBeUpdated.carbohydrate.toString() : ''),
+                protein: (mealToBeUpdated.protein ? mealToBeUpdated.protein.toString() : ''),
+                consumedAt: mealToBeUpdated.consumedAt
+            });
+        }
+    }
+    const closeUpdateMealModal = () => {
+        setUpdateMealModalIsOpen(false);
         setSelectedMeal(null);
         setFormData({
             name: '',
@@ -615,7 +685,7 @@ const Meals = () => {
         return errorCount === 0;
     }
 
-    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    const addMeal = async (e: React.FormEvent<HTMLFormElement>) => {
         // prevent screen refresh //
         e.preventDefault();
 
@@ -724,12 +794,21 @@ const Meals = () => {
                     const error = await response.json();
                     console.log(error);
                 }
-                closeModal();
+                closeAddMealModal();
             } 
             catch (err) {
                 console.log(`Error: ${err}`);
                 //toast.error('An error occurred, please try again.');
             }
+        }
+    }
+
+    const updateMeal = async (e: React.FormEvent<HTMLFormElement>) => {
+        // prevent screen refresh //
+        e.preventDefault();
+
+        if (validateFormData()) {
+
         }
     }
 
@@ -937,7 +1016,11 @@ const Meals = () => {
                                         }
                                         </td>
                                         <td className='td9'>
-                                            <button>Edit</button>
+                                            <button onClick={() => {
+                                                openUpdateMealModal('Breakfast', breakfast.id)
+                                            }}>
+                                                Edit
+                                            </button>
                                         </td>
                                         <td className='td10'>
                                             <button onClick={() => {
@@ -968,7 +1051,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openModal('Breakfast')
+                    openAddMealModal('Breakfast')
                 }}>
                     Add Breakfast
                 </button>
@@ -1017,7 +1100,11 @@ const Meals = () => {
                                         }
                                         </td>
                                         <td className='td9'>
-                                            <button>Edit</button>
+                                            <button onClick={() => {
+                                                openUpdateMealModal('Lunch', lunch.id)
+                                            }}>
+                                                Edit
+                                            </button>
                                         </td>
                                         <td className='td10'>
                                             <button onClick={() => {
@@ -1048,7 +1135,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openModal('Lunch')
+                    openAddMealModal('Lunch')
                 }}>
                     Add Lunch
                 </button>
@@ -1097,7 +1184,11 @@ const Meals = () => {
                                         }
                                         </td>
                                         <td className='td9'>
-                                            <button>Edit</button>
+                                            <button onClick={() => {
+                                                openUpdateMealModal('Dinner', dinner.id)
+                                            }}>
+                                                Edit
+                                            </button>
                                         </td>
                                         <td className='td10'>
                                             <button onClick={() => {
@@ -1128,7 +1219,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openModal('Dinner')
+                    openAddMealModal('Dinner')
                 }}>
                     Add Dinner
                 </button>
@@ -1177,7 +1268,11 @@ const Meals = () => {
                                         }
                                         </td>
                                         <td className='td9'>
-                                            <button>Edit</button>
+                                            <button onClick={() => {
+                                                openUpdateMealModal('Snack', snack.id)
+                                            }}>
+                                                Edit
+                                            </button>
                                         </td>
                                         <td className='td10'>
                                             <button onClick={() => {
@@ -1208,7 +1303,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openModal('Snack')
+                    openAddMealModal('Snack')
                 }}>
                     Add Snack
                 </button>
@@ -1244,16 +1339,16 @@ const Meals = () => {
 
             <br />
 
-            <CustomModal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
+            <AddMealModal
+                isOpen={addMealModalIsOpen}
+                onRequestClose={closeAddMealModal}
                 contentLabel='Modal'
             >
                 <div id='content-modal-div'>
-                    <button id='modal-exit-btn' onClick={closeModal}><StyledFaXmark /></button>
+                    <button id='modal-exit-btn' onClick={closeAddMealModal}><StyledFaXmark /></button>
                     <h1>{selectedMeal}</h1>
 
-                    <form onSubmit={submitForm}>
+                    <form onSubmit={addMeal} autoComplete='off'>
                         <div>
                             <p>{formDataErrors.name}</p>
                             <label htmlFor='meal-name'><b>Name:</b> <StyledFaStarOfLife /></label>
@@ -1381,13 +1476,219 @@ const Meals = () => {
                         <button type='submit'>Enter</button>
                     </form>
                 </div>
-            </CustomModal>
+            </AddMealModal>
+            <UpdateMealModal
+                isOpen={updateMealModalIsOpen}
+                onRequestClose={closeUpdateMealModal}
+                contentLabel='Modal'
+            >
+                <div id='content-modal-div'>
+                    <button id='modal-exit-btn' onClick={closeUpdateMealModal}><StyledFaXmark /></button>
+                    <h1>{selectedMeal}</h1>
+
+                    <form onSubmit={updateMeal} autoComplete='off'>
+                        <div>
+                            <p>{formDataErrors.name}</p>
+                            <label htmlFor='meal-name'><b>Name:</b> <StyledFaStarOfLife /></label>
+                            <input
+                                id='meal-name'
+                                type='text'
+                                value={formData.name}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        name: e.target.value
+                                    }));
+                                }}
+                                autoFocus
+                            />
+                        </div>
+
+                        <div>
+                            <p>{formDataErrors.calorie}</p>
+                            <label htmlFor='meal-calories'><b>Calories:</b></label>
+                            <input
+                                id='meal-calories'
+                                type='number'
+                                value={formData.calorie}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        calorie: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor='meal-fat'><b>Fat:</b> (grams)</label>
+                            <input
+                                id='meal-fat'
+                                type='number'
+                                value={formData.fat}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        fat: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor='meal-cholesterol'><b>Cholesterol:</b> (milligrams)</label>
+                            <input
+                                id='meal-cholesterol'
+                                type='number'
+                                value={formData.cholesterol}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        cholesterol: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor='meal-sodium'><b>Sodium:</b> (milligrams)</label>
+                            <input
+                                id='meal-sodium'
+                                type='number'
+                                value={formData.sodium}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        sodium: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+                        
+                        <div>
+                            <label htmlFor='meal-carbohydrate'><b>Carbohydrate:</b> (grams)</label>
+                            <input
+                                id='meal-carbohydrate'
+                                type='number'
+                                value={formData.carbohydrate}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        carbohydrate: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor='meal-protein'><b>Protein:</b> (grams)</label>
+                            <input
+                                id='meal-protein'
+                                type='number'
+                                value={formData.protein}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        protein: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <p>{formDataErrors.consumedAt}</p>
+                            <label htmlFor='meal-timestamp'><b>Consumed At:</b> <StyledFaStarOfLife /></label>
+                            <input
+                                id='meal-timestamp'
+                                type='datetime-local'
+                                value={formData.consumedAt}
+                                onChange={(e) => {
+                                    setFormData((prevFormData) => ({
+                                        ...prevFormData,
+                                        consumedAt: e.target.value
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <button type='submit'>Enter</button>
+                    </form>
+                </div>
+            </UpdateMealModal>
         </Container>
     );
 }
 export default Meals;
 
-const CustomModal = styled(Modal)`
+const AddMealModal = styled(Modal)`
+    overlay {
+        /* styles for the overlay */
+        background-color: rgba(0, 0, 0, 0.5);
+        /* ... add more overlay styles as needed */
+    }
+
+    #content-modal-div {
+        width: 450px;
+        height: auto;
+        padding: 15px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        text-align: center;
+        border: 1px solid black;
+
+        #modal-exit-btn {
+            float: right;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin: 5px 0 5px 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            div {
+                display: flex;
+                flex-direction: column;
+                p {
+                    margin: 0;
+                    color: red;
+                }
+                label {
+                    text-align: left;
+                }
+                input {
+                    border: 3px solid #4484CE;
+                    border-radius: 10px;
+                }
+            }
+            
+            button {
+                margin: 0 auto;
+                width: 225px;
+                cursor: pointer;
+                font-weight: bold;
+                background-color: white;
+                border: 3px solid green;
+                border-radius: 10px;
+            }
+        }
+    }
+`;
+const UpdateMealModal = styled(Modal)`
     overlay {
         /* styles for the overlay */
         background-color: rgba(0, 0, 0, 0.5);
