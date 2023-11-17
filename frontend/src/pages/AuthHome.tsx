@@ -10,14 +10,15 @@ import FoodBanner from './images/food-banner.png';
 const AuthHomeContainer = styled.div`
     border: 1px solid red;
     width: 100%;
-    height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px);
     background-color: #D9D9D9;
 
     #user-header-div {
         border: 1px solid black;
         
         h1 {
-            margin: 10px 0 10px 0;
+            margin: 0;
+            padding: 10px 0 10px 0;
             text-align: center;
         }
     }
@@ -31,7 +32,7 @@ const AuthHomeContainer = styled.div`
         border: 1px solid black;
         display: flex;
         justify-content: space-evenly;
-        padding: 25px;
+        padding: 25px 0 25px 0;
 
         button {
             width: 300px;
@@ -39,7 +40,7 @@ const AuthHomeContainer = styled.div`
             cursor: pointer;
             font-weight: bold;
             background-color: white;
-            border: 1px solid black;
+            border: 3px solid #4484CE;
             border-radius: 10px;
         }
     }

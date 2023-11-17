@@ -6,7 +6,7 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaXmark, FaStarOfLife } from 'react-icons/fa6';
+import { FaArrowLeft, FaArrowRight, FaXmark, FaStarOfLife } from 'react-icons/fa6';
 
 // set the app root element //
 Modal.setAppElement('#root');
@@ -19,10 +19,21 @@ const Container = styled.div`
     background-color: #D9D9D9;
 
     #date-div {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
         border-bottom: 3px solid #4484CE;
         h1 {
             margin: 10px 0 10px 0;
             text-align: center;
+        }
+        button {
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            background-color: white;
+            border: 3px solid #4484CE;
+            border-radius: 10px;
         }
     }
 
@@ -150,14 +161,25 @@ const Container = styled.div`
         }
     }
 `;
+const StyledFaArrowLeft = styled(FaArrowLeft)`
+    color: #4484CE;
+`;
+const StyledFaArrowRight = styled(FaArrowRight)`
+    color: #4484CE;
+`;
 
-const Meals = () => {
+interface MealsProps {
+    displayDate: null | string;
+    setDisplayDate: (newDisplayDate: string) => void;
+    queryDate: null | string;
+    setQueryDate: (newQueryDate: string) => void;
+};
+
+const Meals: React.FC<MealsProps> = ({ displayDate, setDisplayDate, queryDate, setQueryDate }) => {
     const { consumer, setConsumer } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
-    const [displayDate, setDisplayDate] = useState<null | string>(null);
-    const [queryDate, setQueryDate] = useState<null | string>(null);
     const [selectedMeal, setSelectedMeal] = useState<null | string>(null);
     const [selectedId, setSelectedId] = useState<null | number>(null);
     const [addMealModalIsOpen, setAddMealModalIsOpen] = useState<boolean>(false);
@@ -275,7 +297,7 @@ const Meals = () => {
     });
 
     useEffect(() => {
-        const getDailyMeals = async (date: string) => {
+        const getDailyMeals = async () => {
             try {
                 const response = await fetch(
                     'http://localhost:5000/api/v1/nutrition/getDailyMeals',
@@ -285,7 +307,7 @@ const Meals = () => {
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ date: date })
+                        body: JSON.stringify({ date: queryDate })
                     }
                 );
 
@@ -467,19 +489,32 @@ const Meals = () => {
             }
         }
 
-        const getCurrentDate = () => {
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth() + 1;
-            const currentDay = currentDate.getDate();
-            const currentYear = currentDate.getFullYear();
-            setDisplayDate(`${currentMonth}/${currentDay}/${currentYear}`);
-            setQueryDate(`${currentYear}-${currentMonth}-${currentDay}`);
+        getDailyMeals();
+    }, [consumer.authenticated, queryDate]);
 
-            getDailyMeals(`${currentYear}-${currentMonth}-${currentDay}`);
+    const getOtherDate = (direction: string) => {
+        if (displayDate) {
+            // parse MM/DD/YYYY string into a Date object //
+            let currentDate = new Date(displayDate);
+
+            // subtract or add one day //
+            if (direction === 'left') {
+                currentDate.setDate(currentDate.getDate() - 1);
+            }
+            else if (direction === 'right') {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // extract date components //
+            const previousMonth = currentDate.getMonth() + 1;
+            const previousDay = currentDate.getDate();
+            const previousYear = currentDate.getFullYear();
+
+            // update dates //
+            setDisplayDate(`${previousMonth}/${previousDay}/${previousYear}`);
+            setQueryDate(`${previousYear}-${previousMonth}-${previousDay}`);
         }
-
-        getCurrentDate();
-    }, [consumer.authenticated]);
+    }
 
     const openAddMealModal = (meal:string) => {
         setAddMealModalIsOpen(true);
@@ -1117,7 +1152,17 @@ const Meals = () => {
     return (
         <Container>
             <div id='date-div'>
+                <button onClick={() => {
+                    getOtherDate('left')
+                }}>
+                    <StyledFaArrowLeft />
+                </button>
                 <h1>{displayDate}</h1>
+                <button onClick={() => {
+                    getOtherDate('right')
+                }}>
+                    <StyledFaArrowRight />
+                </button>
             </div>
 
             <div className='meals-div'>

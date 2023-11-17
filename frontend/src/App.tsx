@@ -20,8 +20,19 @@ import Footer from './components/Footer';
 
 function App() {
   const [consumer, setConsumer] = useState<ConsumerType>(initialConsumer);
+  const [displayDate, setDisplayDate] = useState<null | string>(null);
+  const [queryDate, setQueryDate] = useState<null | string>(null);
 
   useEffect(() => {
+    const getCurrentDate = () => {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentDay = currentDate.getDate();
+      const currentYear = currentDate.getFullYear();
+      setDisplayDate(`${currentMonth}/${currentDay}/${currentYear}`);
+      setQueryDate(`${currentYear}-${currentMonth}-${currentDay}`);
+    }
+
     const authenticateUser = async () => {
       try {
         const response = await fetch(
@@ -46,7 +57,9 @@ function App() {
       catch (err) {
         console.log(`Fetch error: ${err}`);
       }
+      getCurrentDate();
     }
+
     authenticateUser();
   }, []);
 
@@ -61,7 +74,7 @@ function App() {
                 <AuthNavbar />
                 <Routes>
                   <Route path='/' element={ <AuthHome /> } />
-                  <Route path='/meals' element={ <Meals /> } />
+                  <Route path='/meals' element={ <Meals displayDate={displayDate} setDisplayDate={setDisplayDate} queryDate={queryDate} setQueryDate={setQueryDate} /> } />
                   <Route path='/profile' element={ <Profile /> } />
                   <Route path='/register' element={ <Register /> } />
                   <Route path='/login' element={ <Login /> } />
