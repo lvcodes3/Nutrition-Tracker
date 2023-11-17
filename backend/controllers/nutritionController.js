@@ -1,7 +1,7 @@
 const db = require('../db');
 const { isEmpty } = require('../utils/helper.js');
 
-const addBreakfast = (async (req, res) => {
+const addMeal = async (req, res) => {
     try {
         let {
             name,
@@ -11,15 +11,16 @@ const addBreakfast = (async (req, res) => {
             sodium,
             carbohydrate,
             protein,
-            consumedAt
+            consumedAt,
+            mealType
         } = req.body;
 
         // validate data //
         if (isEmpty(name)) {
-            return res.status(401).json({ err: 'Name is required.'});
+            return res.status(400).json({ err: 'Name is required.'});
         }
         else if (name.length > 50) {
-            return res.status(401).json({ err: 'Name can only be up to 50 characters in length.'})
+            return res.status(400).json({ err: 'Name can only be up to 50 characters in length.'})
         }
         calorie = (isEmpty(calorie) ? null : parseInt(calorie));
         fat = (isEmpty(fat) ? null : parseInt(fat));
@@ -28,32 +29,33 @@ const addBreakfast = (async (req, res) => {
         carbohydrate = (isEmpty(carbohydrate) ? null : parseInt(carbohydrate));
         protein = (isEmpty(protein) ? null : parseInt(protein));
         if (isEmpty(consumedAt)) {
-            return res.status(401).json({ err: 'Consumed at is required.' });
+            return res.status(400).json({ err: 'Consumed at is required.' });
         }
 
         // insert data //
         let result = await db.query(
-            `INSERT into breakfast ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
+            `INSERT into ${mealType} ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
              VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'breakfast' AS "mealType";`,
+             RETURNING *, ${mealType} AS "mealType";`,
             [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
         );
         if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error adding breakfast.' });
+            return res.status(500).json({ err: `Error adding ${mealType}.` });
         }
 
         // return data //
         return res.status(201).json(result.rows[0]);
     } 
     catch (err) {
-        console.log(`Error adding breakfast: ${err}`);
-        return res.status(500).json({ err: 'Error adding breakfast.' });
+        console.log(`Error adding ${mealType}: ${err}`);
+        return res.status(500).json({ err: `Error adding ${mealType}.` });
     }
-});
+};
 
-const addLunch = (async (req, res) => {
+const updateMeal = async (req, res) => {
     try {
         let {
+            id,
             name,
             calorie,
             fat,
@@ -61,15 +63,16 @@ const addLunch = (async (req, res) => {
             sodium,
             carbohydrate,
             protein,
-            consumedAt
+            consumedAt,
+            mealType
         } = req.body;
 
         // validate data //
         if (isEmpty(name)) {
-            return res.status(401).json({ err: 'Name is required.'});
+            return res.status(400).json({ err: 'Name is required.'});
         }
         else if (name.length > 50) {
-            return res.status(401).json({ err: 'Name can only be up to 50 characters in length.'})
+            return res.status(400).json({ err: 'Name can only be up to 50 characters in length.'})
         }
         calorie = (isEmpty(calorie) ? null : parseInt(calorie));
         fat = (isEmpty(fat) ? null : parseInt(fat));
@@ -78,130 +81,52 @@ const addLunch = (async (req, res) => {
         carbohydrate = (isEmpty(carbohydrate) ? null : parseInt(carbohydrate));
         protein = (isEmpty(protein) ? null : parseInt(protein));
         if (isEmpty(consumedAt)) {
-            return res.status(401).json({ err: 'Consumed at is required.' });
+            return res.status(400).json({ err: 'Consumed at is required.' });
         }
 
         // insert data //
         let result = await db.query(
-            `INSERT into lunch ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
-             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'lunch' AS "mealType";`,
-            [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
+            `UPDATE ${mealType}
+             SET name=$1, calorie=$2, fat=$3, cholesterol=$4, sodium=$5, carbohydrate=$6, protein=$7, "consumedAt"=$8, "updatedAt"=CURRENT_TIMESTAMP
+             WHERE id=$9 AND "consumerId"=$10
+             RETURNING *, ${mealType} AS "mealType";`,
+            [name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt, id, req.consumer.id]
         );
         if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error adding lunch.' });
+            return res.status(404).json({ err: `Error adding ${mealType}.` });
         }
 
         // return data //
-        return res.status(201).json(result.rows[0]);
+        return res.status(200).json(result.rows[0]);
     } 
     catch (err) {
-        console.log(`Error adding lunch: ${err}`);
-        return res.status(500).json({ err: 'Error adding lunch.' });
+        console.log(`Error adding ${mealType}: ${err}`);
+        return res.status(500).json({ err: `Error adding ${mealType}.` });
     }
-});
+};
 
-const addDinner = (async (req, res) => {
+const deleteMeal = async (req, res) => {
     try {
-        let {
-            name,
-            calorie,
-            fat,
-            cholesterol,
-            sodium,
-            carbohydrate,
-            protein,
-            consumedAt
-        } = req.body;
+        let { id, mealType } = req.body;
 
-        // validate data //
-        if (isEmpty(name)) {
-            return res.status(401).json({ err: 'Name is required.'});
-        }
-        else if (name.length > 50) {
-            return res.status(401).json({ err: 'Name can only be up to 50 characters in length.'})
-        }
-        calorie = (isEmpty(calorie) ? null : parseInt(calorie));
-        fat = (isEmpty(fat) ? null : parseInt(fat));
-        cholesterol = (isEmpty(cholesterol) ? null : parseInt(cholesterol));
-        sodium = (isEmpty(sodium) ? null : parseInt(sodium));
-        carbohydrate = (isEmpty(carbohydrate) ? null : parseInt(carbohydrate));
-        protein = (isEmpty(protein) ? null : parseInt(protein));
-        if (isEmpty(consumedAt)) {
-            return res.status(401).json({ err: 'Consumed at is required.' });
-        }
-
-        // insert data //
         let result = await db.query(
-            `INSERT into dinner ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
-             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'dinner' AS "mealType";`,
-            [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
+            `DELETE FROM ${mealType}
+             WHERE id=$1 AND "consumerId"=$2;`,
+            [id, req.consumer.id]
         );
         if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error adding dinner.' });
+            return res.status(404).json({ err: `${mealType} not found.` });
         }
 
-        // return data //
-        return res.status(201).json(result.rows[0]);
-    } 
-    catch (err) {
-        console.log(`Error adding dinner: ${err}`);
-        return res.status(500).json({ err: 'Error adding dinner.' });
+        return res.status(204).send();
     }
-});
-
-const addSnack = (async (req, res) => {
-    try {
-        let {
-            name,
-            calorie,
-            fat,
-            cholesterol,
-            sodium,
-            carbohydrate,
-            protein,
-            consumedAt
-        } = req.body;
-
-        // validate data //
-        if (isEmpty(name)) {
-            return res.status(401).json({ err: 'Name is required.'});
-        }
-        else if (name.length > 50) {
-            return res.status(401).json({ err: 'Name can only be up to 50 characters in length.'})
-        }
-        calorie = (isEmpty(calorie) ? null : parseInt(calorie));
-        fat = (isEmpty(fat) ? null : parseInt(fat));
-        cholesterol = (isEmpty(cholesterol) ? null : parseInt(cholesterol));
-        sodium = (isEmpty(sodium) ? null : parseInt(sodium));
-        carbohydrate = (isEmpty(carbohydrate) ? null : parseInt(carbohydrate));
-        protein = (isEmpty(protein) ? null : parseInt(protein));
-        if (isEmpty(consumedAt)) {
-            return res.status(401).json({ err: 'Consumed at is required.' });
-        }
-
-        // insert data //
-        let result = await db.query(
-            `INSERT into snack ("consumerId", name, calorie, fat, cholesterol, sodium, carbohydrate, protein, "consumedAt")
-             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *, 'snack' AS "mealType";`,
-            [req.consumer.id, name, calorie, fat, cholesterol, sodium, carbohydrate, protein, consumedAt]
-        );
-        if (result.rowCount === 0) {
-            return res.status(400).json({ err: 'Error adding snack.' });
-        }
-
-        // return data //
-        return res.status(201).json(result.rows[0]);
-    } 
     catch (err) {
-        console.log(`Error adding snack: ${err}`);
-        return res.status(500).json({ err: 'Error adding snack.' });
+        console.log(`Error deleting ${mealType}: ${err}`);
+        return res.status(500).json({ err: `Error deleting ${mealType}.` });
     }
-});
+};
 
-const getDailyMeals = (async (req, res) => {
+const getDailyMeals = async (req, res) => {
     try {
         let { date } = req.body;
 
@@ -226,34 +151,11 @@ const getDailyMeals = (async (req, res) => {
         console.log(`Error getting daily meals: ${err}`);
         return res.status(500).json({ err: 'Error getting daily meals.' });
     }
-});
-
-const deleteMeal = (async (req, res) => {
-    try {
-        let { id, mealType } = req.body;
-
-        let result = await db.query(
-            `DELETE FROM ${mealType}
-             WHERE id=$1;`,
-            [id]
-        );
-        if (result.rowCount === 0) {
-            return res.status(404).json({ err: 'Meal not found.' });
-        }
-
-        return res.status(204).send();
-    } 
-    catch (err) {
-        console.log(`Error deleting meal: ${err}`);
-        return res.status(500).json({ err: 'Error deleting meal.' });
-    }
-});
+};
 
 module.exports = {
-    addBreakfast,
-    addLunch,
-    addDinner,
-    addSnack,
-    getDailyMeals,
-    deleteMeal
+    addMeal,
+    updateMeal,
+    deleteMeal,
+    getDailyMeals
 };

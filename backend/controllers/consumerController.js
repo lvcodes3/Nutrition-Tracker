@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const generateJWT = require('../utils/generateJWT.js');
 const { isEmpty } = require('../utils/helper.js');
 
-const registerConsumer = (async (req, res) => {
+const registerConsumer = async (req, res) => {
     try {
         const { firstName, email, password } = req.body;
 
@@ -38,7 +38,7 @@ const registerConsumer = (async (req, res) => {
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // register user //
+        // register consumer //
         result = await db.query(
             `INSERT INTO consumer ("firstName", email, password)
              VALUES ($1, $2, $3)
@@ -55,9 +55,9 @@ const registerConsumer = (async (req, res) => {
         console.log(`Registration error: ${err}`);
         return res.status(500).json({ err: 'Registration error.'});
     }
-});
+};
 
-const loginConsumer = (async (req, res) => {
+const loginConsumer = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -99,7 +99,7 @@ const loginConsumer = (async (req, res) => {
         console.log(`Login error: ${err}`);
         return res.status(500).json({ err: 'Login error.' });
     }
-});
+};
 
 const logoutConsumer = (req, res) => {
     try {
@@ -115,9 +115,9 @@ const logoutConsumer = (req, res) => {
     }
 };
 
-const authConsumer = (async (req, res) => {
+const authConsumer = async (req, res) => {
     return res.status(200).json(req.consumer);
-});
+};
 
 module.exports = {
     registerConsumer,

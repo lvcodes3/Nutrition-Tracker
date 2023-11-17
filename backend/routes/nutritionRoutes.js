@@ -9,13 +9,9 @@ const protect = require('../middlewares/authentication.js');
 const nutritionController = require('../controllers/nutritionController.js');
 
 // private routes //
-router.post('/addBreakfast', protect, nutritionController.addBreakfast);
-router.post('/addLunch', protect, nutritionController.addLunch);
-router.post('/addDinner', protect, nutritionController.addDinner);
-router.post('/addSnack', protect, nutritionController.addSnack);
-
-router.post('/getDailyMeals', protect, nutritionController.getDailyMeals);
-
+router.post('/addMeal', protect, nutritionController.addMeal);
+router.post('/updateMeal', protect, nutritionController.updateMeal);
 router.post('/deleteMeal', protect, nutritionController.deleteMeal);
+router.post('/getDailyMeals', protect, nutritionController.getDailyMeals);
 
 module.exports = router;

@@ -159,6 +159,7 @@ const Meals = () => {
     const [displayDate, setDisplayDate] = useState<null | string>(null);
     const [queryDate, setQueryDate] = useState<null | string>(null);
     const [selectedMeal, setSelectedMeal] = useState<null | string>(null);
+    const [selectedId, setSelectedId] = useState<null | number>(null);
     const [addMealModalIsOpen, setAddMealModalIsOpen] = useState<boolean>(false);
     const [updateMealModalIsOpen, setUpdateMealModalIsOpen] = useState<boolean>(false);
 
@@ -484,6 +485,7 @@ const Meals = () => {
         setAddMealModalIsOpen(true);
         setSelectedMeal(meal);
     }
+
     const closeAddMealModal = () => {
         setAddMealModalIsOpen(false);
         setSelectedMeal(null);
@@ -512,34 +514,30 @@ const Meals = () => {
     const openUpdateMealModal = (meal: string, id: number) => {
         setUpdateMealModalIsOpen(true);
         setSelectedMeal(meal);
+        setSelectedId(id);
 
         // find meal by id //
         let mealToBeUpdated: MealDataTypes | undefined = undefined;
         switch (meal) {
-            case 'Breakfast':
-                mealToBeUpdated = breakfasts.find(
-                    (breakfast) => breakfast.id === id
-                );
+            case 'breakfast':
+                mealToBeUpdated = breakfasts.find((breakfast) => breakfast.id === id);
                 break;
-            case 'Lunch':
-                mealToBeUpdated = lunches.find(
-                    (lunch) => lunch.id === id
-                );
+            case 'lunch':
+                mealToBeUpdated = lunches.find((lunch) => lunch.id === id);
                 break;
-            case 'Dinner':
-                mealToBeUpdated = dinners.find(
-                    (dinner) => dinner.id === id
-                );
+            case 'dinner':
+                mealToBeUpdated = dinners.find((dinner) => dinner.id === id);
                 break;
-            case 'Snack':
-                mealToBeUpdated = snacks.find(
-                    (snack) => snack.id === id
-                );
+            case 'snack':
+                mealToBeUpdated = snacks.find((snack) => snack.id === id);
                 break;
         }
 
         if (mealToBeUpdated) {
-            // TODO: convert consumedAt format from 2023-11-16T21:34:00.000Z to 2023-11-16T15:45
+            // convert consumedAt format from 2023-11-16T21:34:00.000Z to 2023-11-16T15:45 (just for the form input) //
+            const date = new Date(mealToBeUpdated.consumedAt);
+            date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+            const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
             setFormData({
                 name: mealToBeUpdated.name,
@@ -549,13 +547,15 @@ const Meals = () => {
                 sodium: (mealToBeUpdated.sodium ? mealToBeUpdated.sodium.toString() : ''),
                 carbohydrate: (mealToBeUpdated.carbohydrate ? mealToBeUpdated.carbohydrate.toString() : ''),
                 protein: (mealToBeUpdated.protein ? mealToBeUpdated.protein.toString() : ''),
-                consumedAt: mealToBeUpdated.consumedAt
+                consumedAt: formattedDate
             });
         }
     }
+
     const closeUpdateMealModal = () => {
         setUpdateMealModalIsOpen(false);
         setSelectedMeal(null);
+        setSelectedId(null);
         setFormData({
             name: '',
             calorie: '',
@@ -578,11 +578,11 @@ const Meals = () => {
         });
     }
 
-    const isIntegerString = (str: string) => {
-        return /^\d+$/.test(str);
-    }
-
     const validateFormData = () => {
+        const isIntegerString = (str: string) => {
+            return /^\d+$/.test(str);
+        }
+
         // clear possible previous errors //
         setFormDataErrors({
             name: '',
@@ -690,115 +690,91 @@ const Meals = () => {
         e.preventDefault();
 
         if (validateFormData()) {
-            // determine api endpoint //
-            let apiEndpoint = '';
-            if (selectedMeal === 'Breakfast') {
-                apiEndpoint = 'addBreakfast';
-            }
-            else if (selectedMeal === 'Lunch') {
-                apiEndpoint = 'addLunch';
-            }
-            else if (selectedMeal === 'Dinner') {
-                apiEndpoint = 'addDinner';
-            }
-            else if (selectedMeal === 'Snack') {
-                apiEndpoint = 'addSnack';
-            }
-
-            // send api request //
             try {
+                const updatedFormData = {
+                    ...formData,
+                    mealType: selectedMeal
+                };
+
                 const response = await fetch(
-                    `http://localhost:5000/api/v1/nutrition/${apiEndpoint}`,
+                    `http://localhost:5000/api/v1/nutrition/addMeal`,
                     {
                         method: 'POST',
                         credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(formData)
+                        body: JSON.stringify(updatedFormData)
                     }
                 );
                 if (response.ok) {
                     const newMeal = await response.json();
 
                     switch(selectedMeal) {
-                        case 'Breakfast':
+                        case 'breakfast':
                             setBreakfasts((prevBreakfasts) => [...prevBreakfasts, newMeal]);
-
-                            let tempSumBreakfasts: MealSumDataTypes = {
+                            setSumBreakfasts({
                                 calorie: sumBreakfasts.calorie + (newMeal.calorie || 0),
                                 fat: sumBreakfasts.fat + (newMeal.fat || 0),
                                 cholesterol: sumBreakfasts.cholesterol + (newMeal.cholesterol || 0),
                                 sodium: sumBreakfasts.sodium + (newMeal.sodium || 0),
                                 carbohydrate: sumBreakfasts.carbohydrate + (newMeal.carbohydrate || 0),
                                 protein: sumBreakfasts.protein + (newMeal.protein || 0)
-                            }
-                            setSumBreakfasts(tempSumBreakfasts);
-
+                            });
                             break;
-                        case 'Lunch':
+                        case 'lunch':
                             setLunches((prevLunches) => [...prevLunches, newMeal]);
-
-                            let tempSumLunches: MealSumDataTypes = {
+                            setSumLunches({
                                 calorie: sumLunches.calorie + (newMeal.calorie || 0),
                                 fat: sumLunches.fat + (newMeal.fat || 0),
                                 cholesterol: sumLunches.cholesterol + (newMeal.cholesterol || 0),
                                 sodium: sumLunches.sodium + (newMeal.sodium || 0),
                                 carbohydrate: sumLunches.carbohydrate + (newMeal.carbohydrate || 0),
                                 protein: sumLunches.protein + (newMeal.protein || 0)
-                            }
-                            setSumLunches(tempSumLunches);
-
+                            });
                             break;
-                        case 'Dinner':
+                        case 'dinner':
                             setDinners((prevDinners) => [...prevDinners, newMeal]);
-
-                            let tempSumDinners: MealSumDataTypes = {
+                            setSumDinners({
                                 calorie: sumDinners.calorie + (newMeal.calorie || 0),
                                 fat: sumDinners.fat + (newMeal.fat || 0),
                                 cholesterol: sumDinners.cholesterol + (newMeal.cholesterol || 0),
                                 sodium: sumDinners.sodium + (newMeal.sodium || 0),
                                 carbohydrate: sumDinners.carbohydrate + (newMeal.carbohydrate || 0),
                                 protein: sumDinners.protein + (newMeal.protein || 0)
-                            }
-                            setSumDinners(tempSumDinners);
-
+                            });
                             break;
-                        case 'Snack':
+                        case 'snack':
                             setSnacks((prevSnacks) => [...prevSnacks, newMeal]);
-
-                            let tempSumSnacks: MealSumDataTypes = {
+                            setSumSnacks({
                                 calorie: sumSnacks.calorie + (newMeal.calorie || 0),
                                 fat: sumSnacks.fat + (newMeal.fat || 0),
                                 cholesterol: sumSnacks.cholesterol + (newMeal.cholesterol || 0),
                                 sodium: sumSnacks.sodium + (newMeal.sodium || 0),
                                 carbohydrate: sumSnacks.carbohydrate + (newMeal.carbohydrate || 0),
                                 protein: sumSnacks.protein + (newMeal.protein || 0)
-                            }
-                            setSumSnacks(tempSumSnacks);
-
+                            })
                             break;
                     }
 
-                    let tempSumMeals: MealSumDataTypes = {
+                    setSumMeals({
                         calorie: sumMeals.calorie + (newMeal.calorie || 0),
                         fat: sumMeals.fat + (newMeal.fat || 0),
                         cholesterol: sumMeals.cholesterol + (newMeal.cholesterol || 0),
                         sodium: sumMeals.sodium + (newMeal.sodium || 0),
                         carbohydrate: sumMeals.carbohydrate + (newMeal.carbohydrate || 0),
                         protein: sumMeals.protein + (newMeal.protein || 0)
-                    }
-                    setSumMeals(tempSumMeals);
+                    });
+
+                    closeAddMealModal();
                 }
                 else {
                     const error = await response.json();
-                    console.log(error);
-                }
-                closeAddMealModal();
-            } 
+                    alert(error);
+                }   
+            }
             catch (err) {
-                console.log(`Error: ${err}`);
-                //toast.error('An error occurred, please try again.');
+                console.log(`Add meal error: ${err}`);
             }
         }
     }
@@ -808,7 +784,176 @@ const Meals = () => {
         e.preventDefault();
 
         if (validateFormData()) {
+            try {
+                const updatedFormData = {
+                    ...formData,
+                    id: selectedId,
+                    mealType: selectedMeal
+                };
 
+                const response = await fetch(
+                    `http://localhost:5000/api/v1/nutrition/updateMeal`,
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedFormData)
+                    }
+                );
+                if (response.ok) {
+                    const updatedMeal = await response.json();
+
+                    switch(selectedMeal) {
+                        case 'breakfast':
+                            // find breakfast by id //
+                            const breakfastToBeUpdated: MealDataTypes | undefined = breakfasts.find(
+                                (breakfast) => breakfast.id === selectedId
+                            );
+
+                            if (breakfastToBeUpdated) {
+                                // subtract old values & add new values //
+                                setSumBreakfasts((prevSumBreakfasts) => ({
+                                    calorie: prevSumBreakfasts.calorie - (breakfastToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSumBreakfasts.fat - (breakfastToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSumBreakfasts.cholesterol - (breakfastToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSumBreakfasts.sodium - (breakfastToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSumBreakfasts.carbohydrate - (breakfastToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSumBreakfasts.protein - (breakfastToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+
+                                setSumMeals((prevSum) => ({
+                                    calorie: prevSum.calorie - (breakfastToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSum.fat - (breakfastToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSum.cholesterol - (breakfastToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSum.sodium - (breakfastToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSum.carbohydrate - (breakfastToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSum.protein - (breakfastToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+                            }
+
+                            // update breakfasts //
+                            const updatedBreakfasts = breakfasts.map(breakfast => {
+                                return breakfast.id === selectedId ? { ...breakfast, ...updatedMeal } : breakfast;
+                            });
+                            setBreakfasts(updatedBreakfasts);
+
+                            break;
+                        case 'lunch':
+                            // find lunch by id //
+                            const lunchToBeUpdated: MealDataTypes | undefined = lunches.find(
+                                (lunch) => lunch.id === selectedId
+                            );
+
+                            if (lunchToBeUpdated) {
+                                // subtract old values & add new values //
+                                setSumLunches((prevSumLunches) => ({
+                                    calorie: prevSumLunches.calorie - (lunchToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSumLunches.fat - (lunchToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSumLunches.cholesterol - (lunchToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSumLunches.sodium - (lunchToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSumLunches.carbohydrate - (lunchToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSumLunches.protein - (lunchToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+
+                                setSumMeals((prevSum) => ({
+                                    calorie: prevSum.calorie - (lunchToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSum.fat - (lunchToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSum.cholesterol - (lunchToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSum.sodium - (lunchToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSum.carbohydrate - (lunchToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSum.protein - (lunchToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+                            }
+
+                            // update lunches //
+                            const updatedLunches = lunches.map(lunch => {
+                                return lunch.id === selectedId ? { ...lunch, ...updatedMeal } : lunch;
+                            });
+                            setLunches(updatedLunches);
+
+                            break;
+                        case 'dinner':
+                            // find dinner by id //
+                            const dinnerToBeUpdated: MealDataTypes | undefined = dinners.find(
+                                (dinner) => dinner.id === selectedId
+                            );
+
+                            if (dinnerToBeUpdated) {
+                                // subtract old values & add new values //
+                                setSumDinners((prevSumDinners) => ({
+                                    calorie: prevSumDinners.calorie - (dinnerToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSumDinners.fat - (dinnerToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSumDinners.cholesterol - (dinnerToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSumDinners.sodium - (dinnerToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSumDinners.carbohydrate - (dinnerToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSumDinners.protein - (dinnerToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+
+                                setSumMeals((prevSum) => ({
+                                    calorie: prevSum.calorie - (dinnerToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSum.fat - (dinnerToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSum.cholesterol - (dinnerToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSum.sodium - (dinnerToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSum.carbohydrate - (dinnerToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSum.protein - (dinnerToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+                            }
+
+                            // update dinners //
+                            const updatedDinners = dinners.map(dinner => {
+                                return dinner.id === selectedId ? { ...dinner, ...updatedMeal } : dinner;
+                            });
+                            setDinners(updatedDinners);
+
+                            break;
+                        case 'snack':
+                            // find snack by id //
+                            const snackToBeUpdated: MealDataTypes | undefined = snacks.find(
+                                (snack) => snack.id === selectedId
+                            );
+
+                            if (snackToBeUpdated) {
+                                // subtract old values & add new values //
+                                setSumSnacks((prevSumSnacks) => ({
+                                    calorie: prevSumSnacks.calorie - (snackToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSumSnacks.fat - (snackToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSumSnacks.cholesterol - (snackToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSumSnacks.sodium - (snackToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSumSnacks.carbohydrate - (snackToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSumSnacks.protein - (snackToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+
+                                setSumMeals((prevSum) => ({
+                                    calorie: prevSum.calorie - (snackToBeUpdated.calorie || 0) + (updatedMeal.calorie || 0),
+                                    fat: prevSum.fat - (snackToBeUpdated.fat || 0) + (updatedMeal.fat || 0),
+                                    cholesterol: prevSum.cholesterol - (snackToBeUpdated.cholesterol || 0) + (updatedMeal.cholesterol || 0),
+                                    sodium: prevSum.sodium - (snackToBeUpdated.sodium || 0) + (updatedMeal.sodium || 0),
+                                    carbohydrate: prevSum.carbohydrate - (snackToBeUpdated.carbohydrate || 0) + (updatedMeal.carbohydrate || 0),
+                                    protein: prevSum.protein - (snackToBeUpdated.protein || 0) + (updatedMeal.protein || 0)
+                                }));
+                            }
+
+                            // update snacks //
+                            const updatedSnacks = snacks.map(snack => {
+                                return snack.id === selectedId ? { ...snack, ...updatedMeal } : snack;
+                            });
+                            setSnacks(updatedSnacks);
+
+                            break;
+                    }
+
+                    closeUpdateMealModal();
+                }
+                else {
+                    const error = await response.json();
+                    alert(error);
+                }   
+            }
+            catch (err) {
+                console.log(`Update meal error: ${err}`);
+            }
         }
     }
 
@@ -1017,7 +1162,7 @@ const Meals = () => {
                                         </td>
                                         <td className='td9'>
                                             <button onClick={() => {
-                                                openUpdateMealModal('Breakfast', breakfast.id)
+                                                openUpdateMealModal('breakfast', breakfast.id)
                                             }}>
                                                 Edit
                                             </button>
@@ -1051,7 +1196,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openAddMealModal('Breakfast')
+                    openAddMealModal('breakfast')
                 }}>
                     Add Breakfast
                 </button>
@@ -1101,7 +1246,7 @@ const Meals = () => {
                                         </td>
                                         <td className='td9'>
                                             <button onClick={() => {
-                                                openUpdateMealModal('Lunch', lunch.id)
+                                                openUpdateMealModal('lunch', lunch.id)
                                             }}>
                                                 Edit
                                             </button>
@@ -1135,7 +1280,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openAddMealModal('Lunch')
+                    openAddMealModal('lunch')
                 }}>
                     Add Lunch
                 </button>
@@ -1185,7 +1330,7 @@ const Meals = () => {
                                         </td>
                                         <td className='td9'>
                                             <button onClick={() => {
-                                                openUpdateMealModal('Dinner', dinner.id)
+                                                openUpdateMealModal('dinner', dinner.id)
                                             }}>
                                                 Edit
                                             </button>
@@ -1219,7 +1364,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openAddMealModal('Dinner')
+                    openAddMealModal('dinner')
                 }}>
                     Add Dinner
                 </button>
@@ -1269,7 +1414,7 @@ const Meals = () => {
                                         </td>
                                         <td className='td9'>
                                             <button onClick={() => {
-                                                openUpdateMealModal('Snack', snack.id)
+                                                openUpdateMealModal('snack', snack.id)
                                             }}>
                                                 Edit
                                             </button>
@@ -1303,7 +1448,7 @@ const Meals = () => {
                     )
                 }
                 <button className='add-meal-btn' onClick={() => {
-                    openAddMealModal('Snack')
+                    openAddMealModal('snack')
                 }}>
                     Add Snack
                 </button>
@@ -1346,7 +1491,7 @@ const Meals = () => {
             >
                 <div id='content-modal-div'>
                     <button id='modal-exit-btn' onClick={closeAddMealModal}><StyledFaXmark /></button>
-                    <h1>{selectedMeal}</h1>
+                    <h1>{ selectedMeal && (selectedMeal.charAt(0).toUpperCase() + selectedMeal.slice(1)) }</h1>
 
                     <form onSubmit={addMeal} autoComplete='off'>
                         <div>
@@ -1477,6 +1622,7 @@ const Meals = () => {
                     </form>
                 </div>
             </AddMealModal>
+
             <UpdateMealModal
                 isOpen={updateMealModalIsOpen}
                 onRequestClose={closeUpdateMealModal}
@@ -1484,7 +1630,7 @@ const Meals = () => {
             >
                 <div id='content-modal-div'>
                     <button id='modal-exit-btn' onClick={closeUpdateMealModal}><StyledFaXmark /></button>
-                    <h1>{selectedMeal}</h1>
+                    <h1>{ selectedMeal && (selectedMeal.charAt(0).toUpperCase() + selectedMeal.slice(1)) }</h1>
 
                     <form onSubmit={updateMeal} autoComplete='off'>
                         <div>
