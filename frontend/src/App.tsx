@@ -75,7 +75,7 @@ function App() {
                 <Routes>
                   <Route path='/' element={ <AuthHome /> } />
                   <Route path='/meals' element={ <Meals displayDate={displayDate} setDisplayDate={setDisplayDate} queryDate={queryDate} setQueryDate={setQueryDate} /> } />
-                  <Route path='/profile' element={ <Profile /> } />
+                  <Route path='/profile' element={ <Profile displayDate={displayDate} setDisplayDate={setDisplayDate} queryDate={queryDate} setQueryDate={setQueryDate} /> } />
                   <Route path='/register' element={ <Register /> } />
                   <Route path='/login' element={ <Login /> } />
                   <Route path='*' element={ <NotFound /> } />
