@@ -6,16 +6,14 @@ import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
 // assets //
 import FoodBanner from './images/food-banner.png';
+import MealsImg from './images/meals.webp';
 
 const AuthHomeContainer = styled.div`
-    border: 1px solid red;
     width: 100%;
     min-height: calc(100vh - 100px);
     background-color: #D9D9D9;
 
-    #user-header-div {
-        border: 1px solid black;
-        
+    #user-header-div {        
         h1 {
             margin: 0;
             padding: 10px 0 10px 0;
@@ -29,11 +27,9 @@ const AuthHomeContainer = styled.div`
     }
 
     #navigation-div {
-        border: 1px solid black;
         display: flex;
         justify-content: space-evenly;
-        padding: 25px 0 25px 0;
-
+        padding: 25px 0 0 0;
         button {
             width: 300px;
             height: 30px;
@@ -45,8 +41,14 @@ const AuthHomeContainer = styled.div`
         }
     }
 
-    #static-content-div {
-        
+    #static-meals-div {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        img {
+            width: 306px;
+            height: 462.6px;
+        }
     }
 `;
 
@@ -75,8 +77,10 @@ const AuthHome = () => {
                     Go to your Profile
                 </button>
             </div>
-            <div id='static-content-div'>
-                <p>Static Content</p>
+            <div id='static-meals-div'>
+                <p>Track your meals' nutritional facts.</p>
+                <img src={MealsImg} alt='Meals' />
+                <p>Live a healthier lifestyle.</p>
             </div>
         </AuthHomeContainer>
     )

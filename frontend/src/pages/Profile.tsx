@@ -8,33 +8,45 @@ import { AuthContext } from '../context/AuthContext';
 
 const ProfileContainer = styled.div`
     width: 100%;
-    height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px);
+    background-color: #D9D9D9;
 
     h1 {
         margin: 0;
         padding: 10px 0 10px 0;
         text-align: center;
     }
+
+    h2 {
+        margin: 0 auto;
+        width: 90%;
+    }
     
     table {
-        width: 100%;
-        border-collapse: collapse;
+        margin: 0 auto;
         margin-top: 20px;
-    }
-
-    th, td {
-        border: 1px solid #dddddd;
+        width: 90%;
+        border: 1px solid black;
+        border-collapse: collapse;
         text-align: center;
-        padding: 8px;
-    }
 
-    th {
-        background-color: #f2f2f2;
-    }
-
-    td.today {
-        background-color: #4CAF50;
-        color: white;
+        th {
+            width: 14.29%;
+            background-color: #88BBD6;
+            padding: 5px;
+            border: 1px solid black;
+        }
+        td {
+            width: 14.29%;
+            background-color: white;
+            padding: 5px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+        td.today {
+            color: white;
+            background-color: #4CAF50;
+        }
     }
 `;
 
@@ -99,6 +111,7 @@ const Profile: React.FC<ProfileProps> = ({ displayDate, setDisplayDate, queryDat
     return (
         <ProfileContainer>
             <h1>{consumer.firstName}</h1>
+            <h2>Month Name</h2>
             <table>
                 <thead>
                     <tr>
