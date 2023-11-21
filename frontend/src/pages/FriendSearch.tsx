@@ -5,7 +5,7 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaUserPlus, FaUserPen } from 'react-icons/fa6';
 
 const FriendSearchContainer = styled.div`
     width: 100%;
@@ -19,9 +19,10 @@ const FriendSearchContainer = styled.div`
 `;
 const FriendSearchForm = styled.form`
     margin: 0 auto;
-    width: 80%;
+    width: 70%;
     display: flex;
     align-items: stretch;
+    padding: 10px 0 20px 0;
     input {
         flex: 9;
         height: 25px;
@@ -44,8 +45,33 @@ const StyledFaMagnifyingGlass = styled(FaMagnifyingGlass)`
     color: #4484CE;    
     font-size: 18px;
 `;
-const ResultsContainer = styled.div`
-    width: 80%;
+const ResultsTable = styled.table`
+    margin: 0 auto;
+    width: 70%;
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    background-color: white;
+    .td1 {
+        width: 85%;
+        border: 1px solid black;
+    }
+    .td2 {
+        width: 15%;
+        border: 1px solid black;
+        button {
+
+            cursor: pointer;
+            border: none;
+            background-color: green;
+        }
+    }
+`;
+const StyledFaUserPlus = styled(FaUserPlus)`
+
+`;
+const StyledFaUserPen = styled(FaUserPen)`
+
 `;
 
 const FriendSearch = () => {
@@ -113,7 +139,7 @@ const FriendSearch = () => {
 
     return (
         <FriendSearchContainer>
-            <h1>Friend Search</h1>
+            <h1>Search for a Friend</h1>
             <FriendSearchForm onSubmit={search} autoComplete='off'>
                 <input
                     type='text'
@@ -126,22 +152,20 @@ const FriendSearch = () => {
             </FriendSearchForm>
             {
                 consumers && (
-                    <ResultsContainer>
-                        <table>
+                    <ResultsTable>
                             <tbody>
                                 {
                                     consumers.map((consumer) => {
                                         return (
                                             <tr>
-                                                <td>{consumer.firstName}</td>
-                                                <td><button onClick={() => sendFriendRequest(consumer.id)}></button></td>
+                                                <td className='td1'>{consumer.firstName}</td>
+                                                <td className='td2'><button onClick={() => sendFriendRequest(consumer.id)}><StyledFaUserPlus /></button></td>
                                             </tr>
                                         )
                                     })
                                 }
                             </tbody>
-                        </table>
-                    </ResultsContainer>
+                    </ResultsTable>
                 )
             }
         </FriendSearchContainer>
