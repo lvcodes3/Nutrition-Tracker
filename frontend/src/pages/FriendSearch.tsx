@@ -54,17 +54,15 @@ const ResultsTable = styled.table`
     background-color: white;
     .td1 {
         width: 85%;
+        font-weight: bold;
         border: 1px solid black;
     }
     .td2 {
         width: 15%;
         border: 1px solid black;
-        button {
-
-            cursor: pointer;
-            border: none;
-            background-color: green;
-        }
+        background-color: #4CAF50;
+        cursor: pointer;
+        font-size: 18px;
     }
 `;
 const StyledFaUserPlus = styled(FaUserPlus)`
@@ -119,6 +117,7 @@ const FriendSearch = () => {
     
                 if (response.ok) {
                     const consumersArr = await response.json();
+                    console.log(consumersArr);
                     setConsumers(consumersArr);
                 } 
                 else {
@@ -134,7 +133,33 @@ const FriendSearch = () => {
     }
 
     const sendFriendRequest = async (id: number) => {
+        try {
+            const response = await fetch(
+                'http://localhost:5000/api/v1/consumer/searchByFirstName',
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ firstName: formFirstName })
+                }
+            );    
 
+            if (response.ok) {
+                const consumersArr = await response.json();
+                console.log(consumersArr);
+                setConsumers(consumersArr);
+            } 
+            else {
+                const error = await response.json();
+                toast.error(error.err);
+            }
+        } 
+        catch (err) {
+            console.log(`Error: ${err}`);
+            toast.error('An error occurred, please try again.');
+        }
     }
 
     return (
@@ -157,9 +182,9 @@ const FriendSearch = () => {
                                 {
                                     consumers.map((consumer) => {
                                         return (
-                                            <tr>
+                                            <tr key={consumer.id}>
                                                 <td className='td1'>{consumer.firstName}</td>
-                                                <td className='td2'><button onClick={() => sendFriendRequest(consumer.id)}><StyledFaUserPlus /></button></td>
+                                                <td className='td2' onClick={() => sendFriendRequest(consumer.id)}><StyledFaUserPlus /></td>
                                             </tr>
                                         )
                                     })

@@ -156,6 +156,57 @@ const searchByFirstName = async (req, res) => {
         console.log(`Search by first name error: ${err}`);
         return res.status(500).json({ err: 'Search by first name error.' });
     }
+};
+
+const sendFriendRequest = async () => {
+    try {
+        const { senderId, receiverId } = req.body;
+
+        // first check to see if relation already exists //
+        let result = await db.query(
+            `SELECT id, "senderId", "receiverId", status
+             FROM "consumerFriendRelationship"
+             WHERE "senderId" = $1 OR "receiverId" = $2 OR "senderId" = $2 OR "receiverId" = $1;`,
+            [senderId, receiverId]
+        );
+
+        if (result.rowCount === 0) {
+            let res = await db.query(
+                `INSERT INTO "consumerFriendRelationship" ("senderId", "receiverId", status)
+                 VALUES ($1, $2, 'pending')
+                 RETURNING id, "senderId", "receiverId", status;`,
+                [senderId, receiverId]
+            );
+            if (res.rowCount === 0) {
+                return res.status(400).json({ err: 'Error sending friend request.' });
+            }
+            return res.status(201).json(res.rows[0]);
+        }
+        else {
+            let relation = result.rows[0];
+
+            if (relation.status === 'pending') {
+                let res = await db.query(
+                    `UPDATE "consumerFriendRelationship"
+                     SET status = 'accepted', "updatedAt" = CURRENT_TIMESTAMP
+                     WHERE id=$1;`,
+                    [relation.id]
+                );
+                
+            }
+            else if (relation.status === 'accepted') {
+                return res.status(401).json({ err: 'Unable to send a friend request to someone you are already friends with.' });
+            }
+            else if (relation.status === 'rejected') {
+                return res.status(401).json({ err: 'Unable to send a friend request to someone who rejected your previous friend request.' });
+            }
+        }
+
+    } 
+    catch (err) {
+        console.log(`Error sending friend request: ${err}`);
+        return res.status(500).json({ err: 'Error sending friend request.' });
+    }
 }
 
 module.exports = {
@@ -163,5 +214,6 @@ module.exports = {
     loginConsumer,
     logoutConsumer,
     authConsumer,
-    searchByFirstName
+    searchByFirstName,
+    sendFriendRequest
 };
