@@ -15,5 +15,6 @@ router.post('/logout', consumerController.logoutConsumer);
 
 // private routes //
 router.get('/auth', protect, consumerController.authConsumer);
+router.post('/searchByFirstName', protect, consumerController.searchByFirstName);
 
 module.exports = router;

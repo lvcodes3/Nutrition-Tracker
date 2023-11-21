@@ -119,9 +119,49 @@ const authConsumer = async (req, res) => {
     return res.status(200).json(req.consumer);
 };
 
+const searchByFirstName = async (req, res) => {
+    try {
+        const { firstName } = req.body;
+        let altFirstName = '';
+
+        if (/^[A-Z]/.test(firstName)) {
+            altFirstName = firstName.charAt(0).toLowerCase() + firstName.slice(1);
+        } 
+        else {
+            altFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        }
+
+        let result = await db.query(
+            `SELECT id, "firstName" 
+             FROM consumer
+             WHERE ("firstName"=$1 OR "firstName"=$2 OR "firstName" LIKE '%' || $1 || '%' OR "firstName" LIKE '%' || $2 || '%')
+                AND id!=$3
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM "consumerFriendRelationship"
+                    WHERE ("senderId" = consumer.id AND "receiverId"=$3)
+                        OR ("receiverId" = consumer.id AND "senderId"=$3)
+                        AND status='accepted'
+                );`,
+            [firstName, altFirstName, req.consumer.id]
+        );
+        if (result.rowCount === 0) {
+            return res.status(400).json({ err: `No search results for ${firstName}.` });
+        }
+        else {
+            return res.status(200).json(result.rows);
+        }
+    } 
+    catch (err) {
+        console.log(`Search by first name error: ${err}`);
+        return res.status(500).json({ err: 'Search by first name error.' });
+    }
+}
+
 module.exports = {
     registerConsumer,
     loginConsumer,
     logoutConsumer,
-    authConsumer
+    authConsumer,
+    searchByFirstName
 };

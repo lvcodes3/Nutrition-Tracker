@@ -11,10 +11,27 @@ const ProfileContainer = styled.div`
     min-height: calc(100vh - 100px);
     background-color: #D9D9D9;
 
-    h1 {
-        margin: 0;
-        padding: 10px 0 10px 0;
+    #profile-header-div {
+        position: relative;
         text-align: center;
+        h1 {
+            display: inline-block;
+            margin: 0;
+            padding: 10px 0 10px 0;
+        }
+        button {
+            position: absolute;
+            top: 50%;
+            right: 2%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: white;
+            border: 3px solid #4484CE;
+            border-radius: 10px;
+        }
     }
 
     h2 {
@@ -110,7 +127,12 @@ const Profile: React.FC<ProfileProps> = ({ displayDate, setDisplayDate, queryDat
 
     return (
         <ProfileContainer>
-            <h1>{consumer.firstName}</h1>
+            <div id='profile-header-div'>     
+                <h1>{consumer.firstName}</h1>
+                <button onClick={() => {
+                    navigate('/friendSearch');
+                }}>Add a Friend</button>  
+            </div>
             <h2>Month Name</h2>
             <table>
                 <thead>

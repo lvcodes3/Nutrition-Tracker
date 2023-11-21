@@ -18,8 +18,20 @@ CREATE TABLE consumer (
     "lastSignedIn" TIMESTAMP
 );
 
+-- 3. Create consumerFriendRelationship Table --
+CREATE TABLE "consumerFriendRelationship" (
+    id SERIAL NOT NULL PRIMARY KEY,
+    "senderId" INTEGER NOT NULL REFERENCES consumer(id),
+    "receiverId" INTEGER NOT NULL REFERENCES consumer(id),
+    status VARCHAR(20) NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP,
+    UNIQUE ("senderId", "receiverId"),
+    CHECK (status IN ('pending', 'accepted', 'rejected'))
+);
+
 -- 3. Create breakfast Table --
-CREATE TABLE breakfast  (
+CREATE TABLE breakfast (
     id SERIAL NOT NULL PRIMARY KEY,
     "consumerId" INTEGER NOT NULL REFERENCES consumer(id),
     name VARCHAR(50) NOT NULL,
@@ -81,3 +93,16 @@ CREATE TABLE snack (
     "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP
 );
+
+-- 7. Create message Table --
+CREATE TABLE message (
+    id SERIAL NOT NULL PRIMARY KEY,
+    "senderId" INTEGER NOT NULL REFERENCES consumer(id),
+    "receiverId" INTEGER NOT NULL REFERENCES consumer(id),
+    content VARCHAR(512) NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Create indexes to improve query performance --
+CREATE INDEX sender_idx ON message ("senderId");
+CREATE INDEX receiverId ON message ("receiverId");
