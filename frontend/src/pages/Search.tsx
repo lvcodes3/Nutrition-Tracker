@@ -5,9 +5,9 @@ import styled from 'styled-components';
 // context //
 import { AuthContext } from '../context/AuthContext';
 // assets //
-import { FaMagnifyingGlass, FaUserPlus, FaUserPen } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaPersonCirclePlus, FaPersonCircleExclamation, FaPersonCircleXmark, FaPersonCircleCheck } from 'react-icons/fa6';
 
-const FriendSearchContainer = styled.div`
+const SearchContainer = styled.div`
     width: 100%;
     min-height: calc(100vh - 100px);
     background-color: #D9D9D9;
@@ -17,7 +17,7 @@ const FriendSearchContainer = styled.div`
         text-align: center;
     }
 `;
-const FriendSearchForm = styled.form`
+const SearchForm = styled.form`
     margin: 0 auto;
     width: 70%;
     display: flex;
@@ -60,19 +60,31 @@ const ResultsTable = styled.table`
     .td2 {
         width: 15%;
         border: 1px solid black;
-        background-color: #4CAF50;
-        cursor: pointer;
-        font-size: 18px;
+        button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            cursor: pointer;
+        }
     }
 `;
-const StyledFaUserPlus = styled(FaUserPlus)`
-
+const StyledFaPersonCirclePlus = styled(FaPersonCirclePlus)`
+    font-size: 18px;
+    color: #4CAF50;
 `;
-const StyledFaUserPen = styled(FaUserPen)`
-
+const StyledFaPersonCircleExclamation = styled(FaPersonCircleExclamation)`
+    font-size: 18px;
+    color: orange;
+`;
+const StyledFaPersonCircleXmark = styled(FaPersonCircleXmark)`
+    font-size: 18px;
+    color: red;
+`;
+const StyledFaPersonCircleCheck = styled(FaPersonCircleCheck)`
+    font-size: 18px;
 `;
 
-const FriendSearch = () => {
+const Search = () => {
     const { consumer, setConsumer } = useContext(AuthContext);
 
     const [formFirstName, setFormFirstName] = useState<string>('');
@@ -80,6 +92,7 @@ const FriendSearch = () => {
     interface ConsumersType {
         id: number;
         firstName: string;
+        relationshipStatus: string;
     };
     const [consumers, setConsumers] = useState<null | ConsumersType[]>(null);
 
@@ -135,21 +148,20 @@ const FriendSearch = () => {
     const sendFriendRequest = async (id: number) => {
         try {
             const response = await fetch(
-                'http://localhost:5000/api/v1/consumer/searchByFirstName',
+                'http://localhost:5000/api/v1/consumer/sendFriendRequest',
                 {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ firstName: formFirstName })
+                    body: JSON.stringify({ receiverId: id})
                 }
             );    
 
             if (response.ok) {
-                const consumersArr = await response.json();
-                console.log(consumersArr);
-                setConsumers(consumersArr);
+                const resp = await response.json();
+                console.log(resp);
             } 
             else {
                 const error = await response.json();
@@ -163,9 +175,9 @@ const FriendSearch = () => {
     }
 
     return (
-        <FriendSearchContainer>
-            <h1>Search for a Friend</h1>
-            <FriendSearchForm onSubmit={search} autoComplete='off'>
+        <SearchContainer>
+            <h1>Search</h1>
+            <SearchForm onSubmit={search} autoComplete='off'>
                 <input
                     type='text'
                     value={formFirstName}
@@ -174,7 +186,7 @@ const FriendSearch = () => {
                     }}
                 />
                 <button type='submit'><StyledFaMagnifyingGlass /></button>
-            </FriendSearchForm>
+            </SearchForm>
             {
                 consumers && (
                     <ResultsTable>
@@ -184,7 +196,34 @@ const FriendSearch = () => {
                                         return (
                                             <tr key={consumer.id}>
                                                 <td className='td1'>{consumer.firstName}</td>
-                                                <td className='td2' onClick={() => sendFriendRequest(consumer.id)}><StyledFaUserPlus /></td>
+                                                {
+                                                    consumer.relationshipStatus === 'null' ? (
+                                                        <td className='td2'>
+                                                            <button onClick={() => sendFriendRequest(consumer.id)}>
+                                                                <StyledFaPersonCirclePlus />
+                                                            </button>
+                                                        </td>
+                                                    ) : consumer.relationshipStatus === 'pending' ? (
+                                                        <td className='td2'>
+                                                            <button>
+                                                                <StyledFaPersonCircleExclamation />
+                                                            </button>
+                                                        </td>
+                                                    ) : consumer.relationshipStatus === 'accepted' ? (
+                                                        <td className='td2'>
+                                                            <button>
+                                                                <StyledFaPersonCircleXmark />
+                                                            </button>
+                                                        </td>
+                                                    ) : (
+                                                        <td className='td2'>
+                                                            <button>
+                                                                <StyledFaPersonCircleCheck />
+                                                            </button>
+                                                        </td>
+                                                    )
+                                                }
+                                                
                                             </tr>
                                         )
                                     })
@@ -193,7 +232,7 @@ const FriendSearch = () => {
                     </ResultsTable>
                 )
             }
-        </FriendSearchContainer>
+        </SearchContainer>
     );
 }
-export default FriendSearch;
+export default Search;

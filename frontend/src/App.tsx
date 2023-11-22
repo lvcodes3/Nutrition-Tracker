@@ -10,7 +10,7 @@ import AuthHome from './pages/AuthHome';
 import UnauthHome from './pages/UnauthHome';
 import Meals from './pages/Meals';
 import Profile from './pages/Profile';
-import FriendSearch from './pages/FriendSearch';
+import Search from './pages/Search';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
@@ -77,7 +77,7 @@ function App() {
                   <Route path='/' element={ <AuthHome /> } />
                   <Route path='/meals' element={ <Meals displayDate={displayDate} setDisplayDate={setDisplayDate} queryDate={queryDate} setQueryDate={setQueryDate} /> } />
                   <Route path='/profile' element={ <Profile displayDate={displayDate} setDisplayDate={setDisplayDate} queryDate={queryDate} setQueryDate={setQueryDate} /> } />
-                  <Route path='/friendSearch' element={ <FriendSearch /> } />
+                  <Route path='/friendSearch' element={ <Search /> } />
                   <Route path='/register' element={ <Register /> } />
                   <Route path='/login' element={ <Login /> } />
                   <Route path='*' element={ <NotFound /> } />

@@ -131,7 +131,7 @@ const Profile: React.FC<ProfileProps> = ({ displayDate, setDisplayDate, queryDat
                 <h1>{consumer.firstName}</h1>
                 <button onClick={() => {
                     navigate('/friendSearch');
-                }}>Search for a Friend</button>  
+                }}>Search</button>  
             </div>
             <h2>Month Name</h2>
             <table>

@@ -52,7 +52,7 @@ const registerConsumer = async (req, res) => {
         return res.status(201).json({ msg: 'Registration successful.' });
     } 
     catch (err) {
-        console.log(`Registration error: ${err}`);
+        console.log(`Registration ${err}`);
         return res.status(500).json({ err: 'Registration error.'});
     }
 };
@@ -96,7 +96,7 @@ const loginConsumer = async (req, res) => {
         res.status(200).json(consumer);
     } 
     catch (err) {
-        console.log(`Login error: ${err}`);
+        console.log(`Login ${err}`);
         return res.status(500).json({ err: 'Login error.' });
     }
 };
@@ -110,7 +110,7 @@ const logoutConsumer = (req, res) => {
         res.status(200).json({ msg: 'Logout successful.' });
     } 
     catch (err) {
-        console.log(`Logout error: ${err}`);
+        console.log(`Logout ${err}`);
         return res.status(500).json({ err: 'Logout error.' });
     }
 };
@@ -122,94 +122,113 @@ const authConsumer = async (req, res) => {
 const searchByFirstName = async (req, res) => {
     try {
         const { firstName } = req.body;
-        let altFirstName = '';
+        let altFirstName = null;
 
-        // if first character is uppercase //
-        if (firstName[0] === firstName[0].toUpperCase()) {
-
+        // first char in firstName is alphabetical //
+        if (!(/[^a-zA-Z]/.test(firstName[0]))) {
+            // first char in firstName is uppercase //
+            if (firstName[0] === firstName[0].toUpperCase()) {
+                altFirstName = firstName[0].toLowerCase() + firstName.slice(1);
+            }
+            // first char in firstName is lowercase //
+            else {
+                altFirstName = firstName[0].toUpperCase() + firstName.slice(1);
+            }
         }
 
-        if (/^[A-Z]/.test(firstName)) {
-            altFirstName = firstName.charAt(0).toLowerCase() + firstName.slice(1);
-        } 
+        let result = null;
+        if (altFirstName) {
+            result = await db.query(
+                `SELECT consumer.id, consumer."firstName", COALESCE(cfr.status, 'null') AS "relationshipStatus"
+                 FROM consumer
+                 LEFT JOIN "consumerFriendRelationship" cfr
+                    ON (cfr."senderId" = consumer.id AND cfr."receiverId" = $3)
+                    OR (cfr."receiverId" = consumer.id AND cfr."senderId" = $3)
+                 WHERE (consumer."firstName" = $1 OR consumer."firstName" = $2)
+                    AND consumer.id != $3;`,
+                [firstName, altFirstName, req.consumer.id]
+            );
+        }
         else {
-            altFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+            result = await db.query(
+                `SELECT consumer.id, consumer."firstName", COALESCE(cfr.status, 'null') AS "relationshipStatus"
+                 FROM consumer
+                 LEFT JOIN "consumerFriendRelationship" cfr
+                    ON (cfr."senderId" = consumer.id AND cfr."receiverId" = $2)
+                    OR (cfr."receiverId" = consumer.id AND cfr."senderId" = $2)
+                 WHERE (consumer."firstName" = $1)
+                    AND consumer.id != $2;`,
+                [firstName, req.consumer.id]
+            );
         }
 
-        let result = await db.query(
-            `SELECT id, "firstName" 
-             FROM consumer
-             WHERE ("firstName"=$1 OR "firstName"=$2 OR "firstName" LIKE '%' || $1 || '%' OR "firstName" LIKE '%' || $2 || '%')
-                AND id!=$3
-                AND NOT EXISTS (
-                    SELECT 1
-                    FROM "consumerFriendRelationship"
-                    WHERE ("senderId" = consumer.id AND "receiverId"=$3)
-                        OR ("receiverId" = consumer.id AND "senderId"=$3)
-                        AND status='accepted'
-                );`,
-            [firstName, altFirstName, req.consumer.id]
-        );
         if (result.rowCount === 0) {
             return res.status(400).json({ err: `No search results for ${firstName}.` });
         }
-        else {
-            return res.status(200).json(result.rows);
-        }
+        return res.status(200).json(result.rows);
     } 
     catch (err) {
-        console.log(`Search by first name error: ${err}`);
+        console.log(`Search by first name ${err}`);
         return res.status(500).json({ err: 'Search by first name error.' });
     }
 };
 
-const sendFriendRequest = async () => {
+const sendFriendRequest = async (req, res) => {
     try {
-        const { senderId, receiverId } = req.body;
+        const { receiverId } = req.body;
+        // use req.consumer.id as the senderID //
 
         // first check to see if relation already exists //
         let result = await db.query(
             `SELECT id, "senderId", "receiverId", status
              FROM "consumerFriendRelationship"
-             WHERE "senderId" = $1 OR "receiverId" = $2 OR "senderId" = $2 OR "receiverId" = $1;`,
-            [senderId, receiverId]
+             WHERE ("senderId" = $1 AND "receiverId" = $2) OR ("senderId" = $2 AND "receiverId" = $1);`,
+            [req.consumer.id, receiverId]
         );
 
+        // relation does not exist //
         if (result.rowCount === 0) {
-            let res = await db.query(
+            result = await db.query(
                 `INSERT INTO "consumerFriendRelationship" ("senderId", "receiverId", status)
                  VALUES ($1, $2, 'pending')
                  RETURNING id, "senderId", "receiverId", status;`,
-                [senderId, receiverId]
+                [req.consumer.id, receiverId]
             );
-            if (res.rowCount === 0) {
+            if (result.rowCount === 0) {
                 return res.status(400).json({ err: 'Error sending friend request.' });
             }
-            return res.status(201).json(res.rows[0]);
+            return res.status(201).json(result.rows[0]);
         }
+        // relation exists //
         else {
             let relation = result.rows[0];
 
-            if (relation.status === 'pending') {
-                let res = await db.query(
-                    `UPDATE "consumerFriendRelationship"
-                     SET status = 'accepted', "updatedAt" = CURRENT_TIMESTAMP
-                     WHERE id=$1;`,
-                    [relation.id]
-                );
-                
-            }
-            else if (relation.status === 'accepted') {
+            if (relation.status === 'accepted') {
                 return res.status(401).json({ err: 'Unable to send a friend request to someone you are already friends with.' });
             }
             else if (relation.status === 'rejected') {
                 return res.status(401).json({ err: 'Unable to send a friend request to someone who rejected your previous friend request.' });
             }
+            else if (relation.senderId === req.consumer.id && relation.status === 'pending') {
+                return res.status(400).json({ err: 'Unable to send another friend request.' });
+            }
+            else if (relation.status === 'pending') {
+                result = await db.query(
+                    `UPDATE "consumerFriendRelationship"
+                     SET status = 'accepted', "updatedAt" = CURRENT_TIMESTAMP
+                     WHERE id=$1
+                     RETURNING id, "senderId", "receiverId", status;`,
+                    [relation.id]
+                );
+                if (result.rowCount === 0) {
+                    return res.status(400).json({ err: 'Error sending friend request.' });
+                }
+                return res.status(200).json(result.rows[0]);
+            }
         }
-
     } 
     catch (err) {
-        console.log(`Error sending friend request: ${err}`);
+        console.log(`Send friend request ${err}`);
         return res.status(500).json({ err: 'Error sending friend request.' });
     }
 };
@@ -225,7 +244,7 @@ const getFriendRequests = async (req, res) => {
         return res.status(200).json(result.rows);
     }
     catch (err) {
-        console.log(`Error getting friend requests: ${err}`);
+        console.log(`Get friend requests ${err}`);
         return res.status(500).json({ err: 'Error getting friend requests.' });    
     }
 };
@@ -237,7 +256,7 @@ const acceptFriendRequest = async (req, res) => {
 
     } 
     catch (err) {
-        console.log(`Error accepting friend request: ${err}`);
+        console.log(`Accept friend request ${err}`);
         return res.status(500).json({ err: 'Error accepting friend request.' });
     }
 };
@@ -247,7 +266,7 @@ const declineFriendRequest = async (req, res) => {
         const { id, senderId, receiverId } = req.body;
     } 
     catch (err) {
-        console.log(`Error declining friend request: ${err}`);
+        console.log(`Decline friend request ${err}`);
         return res.status(500).json({ err: 'Error declining friend request.' });
     }
 };
