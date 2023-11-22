@@ -124,6 +124,11 @@ const searchByFirstName = async (req, res) => {
         const { firstName } = req.body;
         let altFirstName = '';
 
+        // if first character is uppercase //
+        if (firstName[0] === firstName[0].toUpperCase()) {
+
+        }
+
         if (/^[A-Z]/.test(firstName)) {
             altFirstName = firstName.charAt(0).toLowerCase() + firstName.slice(1);
         } 
@@ -207,7 +212,45 @@ const sendFriendRequest = async () => {
         console.log(`Error sending friend request: ${err}`);
         return res.status(500).json({ err: 'Error sending friend request.' });
     }
-}
+};
+
+const getFriendRequests = async (req, res) => {
+    try {
+        let result = await db.query(
+            `SELECT id, "senderId", "receiverId", "status"
+             FROM "consumerFriendRelationship"
+             WHERE "receiverId" = $1 AND status = 'pending';`,
+            [req.consumer.id]
+        );
+        return res.status(200).json(result.rows);
+    }
+    catch (err) {
+        console.log(`Error getting friend requests: ${err}`);
+        return res.status(500).json({ err: 'Error getting friend requests.' });    
+    }
+};
+
+const acceptFriendRequest = async (req, res) => {
+    try {
+        const { id, senderId, receiverId } = req.body;
+
+
+    } 
+    catch (err) {
+        console.log(`Error accepting friend request: ${err}`);
+        return res.status(500).json({ err: 'Error accepting friend request.' });
+    }
+};
+
+const declineFriendRequest = async (req, res) => {
+    try {
+        const { id, senderId, receiverId } = req.body;
+    } 
+    catch (err) {
+        console.log(`Error declining friend request: ${err}`);
+        return res.status(500).json({ err: 'Error declining friend request.' });
+    }
+};
 
 module.exports = {
     registerConsumer,
@@ -215,5 +258,8 @@ module.exports = {
     logoutConsumer,
     authConsumer,
     searchByFirstName,
-    sendFriendRequest
+    sendFriendRequest,
+    getFriendRequests,
+    acceptFriendRequest,
+    declineFriendRequest
 };
